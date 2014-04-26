@@ -9,8 +9,8 @@ function ddinit()
 	document.write("\n");
 	consoleobj = document.getElementById('console');
 	commandobj = document.getElementById('command');
-	ddinitglobalmemory();
 	passthru = '';
+	ddinitglobalmemory();
 	ddintro();
 }
 
@@ -185,6 +185,10 @@ function ddclassification(cliinput)
 	{
 		ddglobal['CS'] = 'WIZARD';
 	}
+	else if(cliinput == 'NONE')
+	{
+		ddglobal['CS'] = 'NONE';
+	}
 }
 
 
@@ -239,11 +243,13 @@ function ddcliinterpreter(inputobj)
 
 /*
 global memory
+I wanted to keep the original 1 to n loops instead of adjusting them to 0.
+But javascript starts counting at 0 so keep that in mind.
 */
 function ddinitglobalmemory()
 {
 	ddglobal = Array();
-	ddglobal['CS'] = Array();
+	ddglobal['CS'] = Array('skip0');
 	ddglobal['CS'][1] = "STR";
 	ddglobal['CS'][2] = "DEX";
 	ddglobal['CS'][3] = "CON";
@@ -251,6 +257,28 @@ function ddinitglobalmemory()
 	ddglobal['CS'][5] = "WIS";
 	ddglobal['CS'][6] = "INT";
 	ddglobal['CS'][7] = "GOLD";
+
+	ddglobal['IS'] = Array('skip0');
+	ddglobal['P'] = Array('skip0');
+
+	var itemlist = Array
+	(
+		"SWORD",10,"2-H-SWORD",15,"DAGGER",3,"MACE",5,
+		"SPEAR",2,"BOW",25,"ARROWS",2,"LEATHER MAIL",15,
+		"CHAIN MAIL",30,"TLTE MAIL",50,"ROPE",1,"SPIKES",1,
+		"FLASK OF OIL",2,"SILVER CROSS",25,"SPARE FOOD",5,
+		"MJOLNIR",1
+	);
+
+	for(var M = 1; M <= 16; M++)
+	{
+		var j = (M * 2) - 2;
+		var k = j + 1;
+
+		ddglobal['IS'][M] = itemlist[j];
+		ddglobal['P'][M] = itemlist[k];
+
+	}
 }
 </script>
 </head>
