@@ -112,7 +112,7 @@ function ddcontinuereset(cliinput)
 }
 
 /*
-
+line 00450
 */
 function ddplayersname(cliinput)
 {
@@ -136,6 +136,8 @@ line 00470
 function ddgeneratestats()
 {
 	ddglobal['C'] = Array();
+	//set hit points to 0
+	ddglobal['C'][0] = 0;
 	for(var M = 1; M <= 7; M++)
 	{
 		ddglobal['C'][M] = 0;
@@ -172,22 +174,29 @@ line 00620
 */
 function ddclassification(cliinput)
 {
-	ddglobal['CS'] = '';
+	ddglobal['CS'][0] = '';
 	if((cliinput == 'F') || (cliinput == 'FIGHTER'))
 	{
-		ddglobal['CS'] = 'FIGHTER';
+		ddglobal['CS'][0] = 'FIGHTER';
+		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
 	}
 	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
 	{
-		ddglobal['CS'] = 'CLERIC';
+		ddglobal['CS'][0] = 'CLERIC';
+		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
 	}
 	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
 	{
-		ddglobal['CS'] = 'WIZARD';
+		ddglobal['CS'][0] = 'WIZARD';
+		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
 	}
 	else if(cliinput == 'NONE')
 	{
-		ddglobal['CS'] = 'NONE';
+		ddglobal['CS'][0] = 'NONE';
+		//NONE is like reroll
+		//line 00625
+		ddgeneratestats();
+		ddclassification_pre();
 	}
 }
 
