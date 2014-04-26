@@ -179,16 +179,19 @@ function ddclassification(cliinput)
 	{
 		ddglobal['CS'][0] = 'FIGHTER';
 		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
 	{
 		ddglobal['CS'][0] = 'CLERIC';
 		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
 	{
 		ddglobal['CS'][0] = 'WIZARD';
 		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddbuyingweapons_pre();
 	}
 	else if(cliinput == 'NONE')
 	{
@@ -198,12 +201,105 @@ function ddclassification(cliinput)
 		ddgeneratestats();
 		ddclassification_pre();
 	}
+	else
+	{
+		ddwrgetinput('ddclassification');
+	}
 }
 
+/*
+line 00670
+*/
+function ddbuyingweapons_pre()
+{
+	ddwr("BUYING WEAPONS");
+	ddwr("NUMBER","ITEM","PRICE");
+	//TODO fast or norm routine
+	ddwr("(0)-STOP");
+	for(var M = 1; M <= 16; M++)
+	{
+		ddwr("("+M+")- "+ddglobal['IS'][M]+" - "+ddglobal['P'][M]);
+	}
+	ddwrgetinput('ddbuyingweapons');
+}
 
+/*
+line 00830
+*/
+function ddbuyingweapons(cliinput)
+{
+	//ddglobal['Y'] = cliinput;
+	if(cliinput == 'L')
+	{
+		ddbuyingweapons_pre();
+	}
+	else
+	{
+		//this varies from the old code
+		if(isNaN(cliinput))
+		{
+			ddwr("ENTER NUMBER 0 - 16 or L");
+			ddwrgetinput('ddbuyingweapons');
+		}
+		else
+		{
+			cliinput = parseInt(cliinput);
+			ddglobal['Y'] = cliinput;
+			if((cliinput < 1) || (cliinput > 16))
+			{
+				ddgoldcount_pre();
+			}
+			else
+			{
+				ddpurchasecheck();
+			}
+		}
+	}
+}
 
+/*
+line 00890
+line 00970
+*/
+function ddpurchasecheck()
+{
+	if( (ddglobal['C'][7] - ddglobal['P'][ddglobal['Y']]) < 0 )
+	{
+		ddwr("COSTS TOO MUCH");
+		ddwr("TRY AGAIN ");
+		ddwrgetinput('ddbuyingweapons');
+	}
+	if( ddglobal['CS'][0] = 'CLERIC' )
+	{
+		if( (ddglobal['Y'] == 4) || (ddglobal['Y'] == 8) || (ddglobal['Y'] == 9) || (ddglobal['Y'] > 10) )
+		{
+			ddpurchaseit();
+		}
+		else
+		{
+			ddwr("YOUR A CLERIC YOU CANT USE THAT ");
+			ddwr("ENTER NUMBER 0 - 16 or L");
+			ddwrgetinput('ddbuyingweapons');
+		}
+	}
+	else if( ddglobal['CS'][0] = 'WIZARD' )
+	{
+		if( (ddglobal['Y'] == 3) || (ddglobal['Y'] == 8) || (ddglobal['Y'] > 10) )
+		{
+			ddpurchaseit();
+		}
+		else
+		{
+			ddwr("YOUR A WIZARD YOU CANT USE THAT ");
+			ddwr("ENTER NUMBER 0 - 16 or L");
+			ddwrgetinput('ddbuyingweapons');
+		}
+	}
+		//keeps track of how many items have been bought
+		ddglobal['X'] = ddglobal['X'] + 1;
+		ddglobal['C'][7] = ddglobal['C'][7] - ddglobal['P'][ddglobal['Y']];
 
-
+}
 
 
 
@@ -286,8 +382,9 @@ function ddinitglobalmemory()
 
 		ddglobal['IS'][M] = itemlist[j];
 		ddglobal['P'][M] = itemlist[k];
-
 	}
+
+	ddglobal['X'] = 0;
 }
 </script>
 </head>
