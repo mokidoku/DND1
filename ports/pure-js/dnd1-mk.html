@@ -9,7 +9,7 @@ function ddinit()
 	document.write("\n");
 	consoleobj = document.getElementById('console');
 	commandobj = document.getElementById('command');
-	ddglobal = Array();
+	ddinitglobalmemory();
 	passthru = '';
 	ddintro();
 }
@@ -146,7 +146,7 @@ function ddgeneratestats()
 		}
 		if(M != 7)
 		{
-			ddwr("="+ddglobal['C'][M]);
+			ddwr(ddglobal['CS'][M]+"="+ddglobal['C'][M]);
 		}
 		else
 		{
@@ -235,6 +235,22 @@ function ddcliinterpreter(inputobj)
 	{
 
 	}
+}
+
+/*
+global memory
+*/
+function ddinitglobalmemory()
+{
+	ddglobal = Array();
+	ddglobal['CS'] = Array();
+	ddglobal['CS'][1] = "STR";
+	ddglobal['CS'][2] = "DEX";
+	ddglobal['CS'][3] = "CON";
+	ddglobal['CS'][4] = "CHAR";
+	ddglobal['CS'][5] = "WIS";
+	ddglobal['CS'][6] = "INT";
+	ddglobal['CS'][7] = "GOLD";
 }
 </script>
 </head>
