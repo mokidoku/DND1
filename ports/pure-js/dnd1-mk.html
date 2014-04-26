@@ -215,7 +215,7 @@ function ddbuyingweapons_pre()
 	ddwr("BUYING WEAPONS");
 	ddwr("NUMBER","ITEM","PRICE");
 	//TODO fast or norm routine
-	ddwr("(0)-STOP");
+	ddwr("(0)- STOP");
 	for(var M = 1; M <= 16; M++)
 	{
 		ddwr("("+M+")- "+ddglobal['IS'][M]+" - "+ddglobal['P'][M]);
@@ -269,37 +269,59 @@ function ddpurchasecheck()
 		ddwr("TRY AGAIN ");
 		ddwrgetinput('ddbuyingweapons');
 	}
-	if( ddglobal['CS'][0] = 'CLERIC' )
+	else
 	{
-		if( (ddglobal['Y'] == 4) || (ddglobal['Y'] == 8) || (ddglobal['Y'] == 9) || (ddglobal['Y'] > 10) )
+		if( ddglobal['CS'][0] == 'CLERIC' )
 		{
-			ddpurchaseit();
+			if( (ddglobal['Y'] == 4) || (ddglobal['Y'] == 8) || (ddglobal['Y'] == 9) || (ddglobal['Y'] > 10) )
+			{
+				ddpurchaseit();
+			}
+			else
+			{
+				ddwr("YOUR A CLERIC YOU CANT USE THAT ");
+				ddwr("ENTER NUMBER 0 - 16 or L");
+				ddwrgetinput('ddbuyingweapons');
+			}
+		}
+		else if( ddglobal['CS'][0] == 'WIZARD' )
+		{
+			if( (ddglobal['Y'] == 3) || (ddglobal['Y'] == 8) || (ddglobal['Y'] > 10) )
+			{
+				ddpurchaseit(ddglobal['Y']);
+			}
+			else
+			{
+				ddwr("YOUR A WIZARD YOU CANT USE THAT ");
+				ddwr("ENTER NUMBER 0 - 16 or L");
+				ddwrgetinput('ddbuyingweapons');
+			}
 		}
 		else
 		{
-			ddwr("YOUR A CLERIC YOU CANT USE THAT ");
-			ddwr("ENTER NUMBER 0 - 16 or L");
-			ddwrgetinput('ddbuyingweapons');
+			//fighter can buy anything
+			ddpurchaseit(ddglobal['Y']);
 		}
 	}
-	else if( ddglobal['CS'][0] = 'WIZARD' )
-	{
-		if( (ddglobal['Y'] == 3) || (ddglobal['Y'] == 8) || (ddglobal['Y'] > 10) )
-		{
-			ddpurchaseit();
-		}
-		else
-		{
-			ddwr("YOUR A WIZARD YOU CANT USE THAT ");
-			ddwr("ENTER NUMBER 0 - 16 or L");
-			ddwrgetinput('ddbuyingweapons');
-		}
-	}
-		//keeps track of how many items have been bought
-		ddglobal['X'] = ddglobal['X'] + 1;
-		ddglobal['C'][7] = ddglobal['C'][7] - ddglobal['P'][ddglobal['Y']];
-
 }
+
+/*
+line 00920
+might want to replace ddglobal['Y'] in here with Y
+*/
+function ddpurchaseit(Y)
+{
+	//reduce gold
+	ddglobal['C'][7] = ddglobal['C'][7] - ddglobal['P'][ddglobal['Y']];
+	ddwr("GP= "+ddglobal['C'][7]);
+	//line 00830
+	//keeps track of how many items have been bought
+	ddglobal['X'] = ddglobal['X'] + 1;
+	ddglobal['W'][ddglobal['X']] = ddglobal['Y'];
+	ddwr("ENTER NUMBER 0 - 16 or L");
+	ddwrgetinput('ddbuyingweapons');
+}
+
 
 
 
@@ -385,6 +407,7 @@ function ddinitglobalmemory()
 	}
 
 	ddglobal['X'] = 0;
+	ddglobal['W'] = Array('skip0');
 }
 </script>
 </head>
