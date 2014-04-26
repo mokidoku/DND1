@@ -322,7 +322,46 @@ function ddpurchaseit(Y)
 	ddwrgetinput('ddbuyingweapons');
 }
 
+/*
+line 01000
+*/
+function ddgoldcount_pre()
+{
+	ddwr("GP= "+ddglobal['C'][7]);
+	ddwr("EQ LIST (Y)ES OR (N)O");
+	ddwrgetinput('ddequipmentlist');
+}
 
+/*
+line 01030
+*/
+function ddequipmentlist(cliinput)
+{
+	ddglobal['QS'] = '';
+	if((cliinput == "N") || (cliinput == "NO"))
+	{
+		ddcharactersheet();
+	}
+	else
+	{
+		for(var M = 1; M <= ddglobal['X']; M++)
+		{
+			if( ddglobal['W'][M] != 0 )
+			{
+				ddwr(ddglobal['W'][M]+" - "+ddglobal['IS'][ddglobal['W'][M]]);
+			}
+		}
+		ddcharactersheet();
+	}
+}
+
+/*
+
+*/
+function ddcharactersheet()
+{
+
+}
 
 
 
@@ -354,6 +393,8 @@ function ddcliinterpreter(inputobj)
 		cliinput = inputobj.value;
 		cliinput = cliinput.toUpperCase();
 	}
+	//TODO possibly set inputobj.value to empty string
+	//WHY? to prevent multiple calls
 	//DANGER WIL ROBINSON
 	var execcom = passthru+'("'+cliinput+'")';
 	eval(execcom);
@@ -396,7 +437,8 @@ function ddinitglobalmemory()
 		"FLASK OF OIL",2,"SILVER CROSS",25,"SPARE FOOD",5,
 		"MJOLNIR",1
 	);
-
+	//IS is item array of names
+	//P is item array of prices
 	for(var M = 1; M <= 16; M++)
 	{
 		var j = (M * 2) - 2;
@@ -405,7 +447,8 @@ function ddinitglobalmemory()
 		ddglobal['IS'][M] = itemlist[j];
 		ddglobal['P'][M] = itemlist[k];
 	}
-
+	//X is count of bought items
+	//W is an array of item numbers bought by character
 	ddglobal['X'] = 0;
 	ddglobal['W'] = Array('skip0');
 }
