@@ -161,7 +161,7 @@ line 00580
 function ddclassification_pre()
 {
 	ddwr("");
-	ddwr("WHO SAID YOU COULD PLAY");
+	ddwr("CLASSIFICATION");
 	ddwr("WHICH DO YOU WANT TO BE");
 	ddwr("(F)IGHTER ,(C)LERIC ,OR (W)IZARD");
 	ddwrgetinput('ddclassification');
@@ -201,9 +201,8 @@ utility functions
 
 function ddwr(txtscalar)
 {
-	//document.write(txtscalar);
-	//document.write("<br>\n");
 	consoleobj.innerHTML = consoleobj.innerHTML + txtscalar + "\n";
+	consoleobj.scrollTop = consoleobj.scrollHeight;
 }
 
 function ddwrgetinput(passfunctionname)
