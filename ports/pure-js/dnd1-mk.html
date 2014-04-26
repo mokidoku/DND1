@@ -143,7 +143,7 @@ function ddgeneratestats()
 		ddglobal['C'][M] = 0;
 		for(var N = 1; N <= 3; N++)
 		{
-			var R = Math.floor(Math.random() * 6) + 1;
+			var R = Math.floor((Math.random() * 6) + 1);
 			ddglobal['C'][M] = ddglobal['C'][M] + R;
 		}
 		if(M != 7)
@@ -178,19 +178,19 @@ function ddclassification(cliinput)
 	if((cliinput == 'F') || (cliinput == 'FIGHTER'))
 	{
 		ddglobal['CS'][0] = 'FIGHTER';
-		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddglobal['C'][0] = Math.floor((Math.random() * 8) + 1);
 		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
 	{
 		ddglobal['CS'][0] = 'CLERIC';
-		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddglobal['C'][0] = Math.floor((Math.random() * 8) + 1);
 		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
 	{
 		ddglobal['CS'][0] = 'WIZARD';
-		ddglobal['C'][0] = Math.floor(Math.random() * 8) + 1;
+		ddglobal['C'][0] = Math.floor((Math.random() * 8) + 1);
 		ddbuyingweapons_pre();
 	}
 	else if(cliinput == 'NONE')
@@ -356,12 +356,80 @@ function ddequipmentlist(cliinput)
 }
 
 /*
-
+line 01090
 */
 function ddcharactersheet()
 {
-
+	ddwr("YOUR CHARACTERISTICS ARE");
+	ddwr(ddglobal['CS'][0]);
+	//bump up hit points if 1
+	if(ddglobal['C'][0] == 1)
+	{
+		ddglobal['C'][0] = 2;
+	}
+	ddwr("HIT POINTS "+ddglobal['C'][0]);
+	ddloaddungeon();
 }
+
+/*
+line 01415
+*/
+function ddloaddungeon()
+{
+	//we really need to have ddglobal['D'] set by now
+	//might want to write a check for it here
+	ddwr("LOADING DUNGEON NUM. "+ddglobal['D']);
+	for(var M = 0; M <= 25; M++)
+	{
+		ddglobal['DA'][M] = Array();
+		for(var N = 0; N <= 25; N++)
+		{
+			if( (ddglobal['D'] >= 0) && (ddglobal['D'] <= 6) )
+			{
+				if(ddglobal['D'] == 0)
+				{
+					ddglobal['DA'][M][N] = 0;
+				}
+				else
+				{
+					ddglobal['DA'][M][N] = ddstockdungeontile(ddglobal['FILE'][ddglobal['D']][M][N]);
+				}
+			}
+			else
+			{
+				//we have a problem in that D is a number we can not use
+			}
+		}
+	}
+	ddwr("DEBUG DISPLAY DUNGEON");
+	dddisplaydungeon(ddglobal['DA']);
+}
+
+/*
+line 01443
+*/
+function ddstockdungeontile(tiletypenumber)
+{
+	tiletypenumber = parseInt(tiletypenumber);
+	var newtiletypenumber = 0;
+	if(tiletypenumber != 0)
+	{
+		newtiletypenumber = tiletypenumber;
+	}
+	else if(tiletypenumber == 0)
+	{
+		if(  (Math.floor((Math.random() * 100) + 1)) >= 97  )
+		{
+			newtiletypenumber = 7;
+		}
+		if(  (Math.floor((Math.random() * 100) + 1)) >= 97  )
+		{
+			newtiletypenumber = 8;
+		}
+	}
+	return newtiletypenumber;
+}
+
 
 
 
@@ -451,6 +519,69 @@ function ddinitglobalmemory()
 	//W is an array of item numbers bought by character
 	ddglobal['X'] = 0;
 	ddglobal['W'] = Array('skip0');
+	//DA is the current dungeon being played DA was just D(0,0) in the original
+	ddglobal['DA'] = Array();
+	//FILE replaces the file routines in the original
+	ddglobal['FILE'] = Array();
+	ddglobal['FILE'][0] = Array();
+	ddglobal['FILE'][1] = dddungeondata1();
+	ddglobal['FILE'][2] = dddungeondata1();
+	ddglobal['FILE'][3] = dddungeondata1();
+	ddglobal['FILE'][4] = dddungeondata1();
+	ddglobal['FILE'][5] = dddungeondata1();
+	ddglobal['FILE'][6] = dddungeondata1();
+}
+
+function dddungeondata1()
+{
+	var d1array = Array();
+	var d1row = Array();
+	var d1col = Array();
+d1row[0]  = "1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+d1row[1]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,7,1,1,1,0,1";
+d1row[2]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+d1row[3]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,6,0,1,0,0,1";
+d1row[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+d1row[5]  = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+d1row[6]  = "1,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
+d1row[7]  = "1,0,1,0,1,0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1";
+d1row[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,1";
+d1row[9]  = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+d1row[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+d1row[11] = "1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+d1row[12] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,7,0,1";
+d1row[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,1";
+d1row[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1";
+d1row[15] = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+d1row[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,2,0,1,0,0,1";
+d1row[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+d1row[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+d1row[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+d1row[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,0,0,0,0,7,0,0,0,1";
+d1row[21] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+d1row[22] = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+d1row[23] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+d1row[24] = "1,0,1,0,1,6,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+d1row[25] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+	for(var M = 0; M <= 25; M++)
+	{
+		d1column = d1row[M].split(',');
+		d1array[M] = d1column;
+	}
+	return d1array;
+}
+
+function dddisplaydungeon(DD)
+{
+	for(var M = 0; M <= 25; M++)
+	{
+		var linestring = '';
+		for(var N = 0; N <= 25; N++)
+		{
+			linestring = linestring+''+DD[M][N];
+		}
+		ddwr(linestring);
+	}
 }
 </script>
 </head>
