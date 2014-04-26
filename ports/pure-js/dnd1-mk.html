@@ -3,11 +3,14 @@
 <script>
 function ddinit()
 {
-	document.write('<textarea id="console" cols="80" rows="12">');
+	document.write('<textarea id="console" cols="80" rows="20">');
 	document.write('</textarea>');
 	document.write('<input id="command" name="command" type="text" size="80" onkeydown="Javascript: if (event.keyCode==13) ddcliinterpreter(this)">');
 	document.write("\n");
 	consoleobj = document.getElementById('console');
+	//consoleobj.style.font="bold 12px courier,monospace";
+	//consoleobj.style.backgroundColor='#000000';
+	//consoleobj.style.color='#FFFFFF';
 	commandobj = document.getElementById('command');
 	passthru = '';
 	ddinitglobalmemory();
@@ -478,6 +481,7 @@ function ddcommandlist(cliinput)
 	{
 		ddglobal['T'] = 1;
 		//GOTO 02170
+		ddmovearound_pre();
 	}
 	else if(cliinput == 2)
 	{
@@ -580,6 +584,7 @@ function ddlookaround()
 		}
 		ddwr(linestring);
 	}
+	ddmaintimeloop();
 }
 
 /*
@@ -622,6 +627,137 @@ function ddseeversusreal(lookm, lookn)
 	}
 	return displaychar;
 }
+
+/*
+line 07000
+Evrything comes here when a turn has passed.
+*/
+function ddmaintimeloop()
+{
+
+	//At the end of the loop we ask the player what to do again
+	ddcommandlist_pre();
+}
+
+/*
+line 2170
+*/
+function ddmovearound_pre()
+{
+	ddwr("YOU ARE AT "+ddglobal['G']+" , "+ddglobal['H']);
+	ddwr("  (D)OWN  (R)IGHT  (L)EFT  OR  (U)P");
+	ddwrgetinput('ddmovearound');
+}
+
+/*
+line 2190
+*/
+function ddmovearound(cliinput)
+{
+	ddglobal['QS'] = '';
+	ddglobal['S'] = 0;
+	ddglobal['T'] = 0;
+	if( (cliinput == 'R') || (cliinput == 'RIGHT') || (cliinput == 'E') || (cliinput == 'EAST' ) )
+	{
+		ddglobal['S'] = 0;
+		ddglobal['T'] = 1;
+		ddcheckmovespot();
+	}
+	else if( (cliinput == 'L') || (cliinput == 'LEFT') || (cliinput == 'W') || (cliinput == 'WEST') )
+	{
+		ddglobal['S'] = 0;
+		ddglobal['T'] = -1;
+		ddcheckmovespot();
+	}
+	else if( (cliinput == 'U') || (cliinput == 'UP') || (cliinput == 'N') || (cliinput == 'NORTH') )
+	{
+		ddglobal['S'] = 1;
+		ddglobal['T'] = 0;
+		ddcheckmovespot();
+	}
+	else if( (cliinput == 'D') || (cliinput == 'DOWN') || (cliinput == 'S') || (cliinput == 'SOUTH') )
+	{
+		ddglobal['S'] = -1;
+		ddglobal['T'] = 0;
+		ddcheckmovespot();
+	}
+	else
+	{
+		//we have an unknown input
+		ddmovearound_pre();
+	}
+}
+
+/*
+line 02370
+02369 REM 0 = SPACE, 1 = WALL, 2 = TRAP
+02369 REM 3 = SECRET, 5 = MONSTER, 6 = GOLD
+02369 REM 7 = ST BONUS, 8 = IN BONUS
+*/
+function ddcheckmovespot()
+{
+	var locg = ddglobal['G'] + ddglobal['S'];
+	var loch = ddglobal['H'] + ddglobal['T'];
+	var tiletypenumber = ddglobal['DA'][locg][loch];
+	if( tiletypenumber == 0 )
+	{
+		//GOTO 02430
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 1 )
+	{
+		//GOTO 02480
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 2 )
+	{
+		//GOTO 02550
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 3 )
+	{
+		//GOTO 02990
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 4 )
+	{
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 5 )
+	{
+		//GOTO 03060
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 6 )
+	{
+		//GOTO 02413
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 7 )
+	{
+		//GOTO 02424
+		ddsimplemove();
+	}
+	else if( tiletypenumber == 8 )
+	{
+		//GOTO 02426
+		ddsimplemove();
+	}
+}
+
+/*
+line 02430
+*/
+function ddsimplemove()
+{
+	ddglobal['G'] = ddglobal['G'] + ddglobal['S'];
+	ddglobal['H'] = ddglobal['H'] + ddglobal['T'];
+	ddmaintimeloop();
+}
+
+
+
+
 
 
 
