@@ -1,0 +1,249 @@
+<html>
+<head>
+<script>
+function ddinit()
+{
+	document.write('<textarea id="console" cols="80" rows="12">');
+	document.write('</textarea>');
+	document.write('<input id="command" name="command" type="text" size="80" onkeydown="Javascript: if (event.keyCode==13) ddcliinterpreter(this)">');
+	document.write("\n");
+	consoleobj = document.getElementById('console');
+	commandobj = document.getElementById('command');
+	ddglobal = Array();
+	passthru = '';
+	ddintro();
+}
+
+function ddintro()
+{
+	ddwr("     RICHARD GARRIOTT DND1");
+	ddwr("");
+	ddwr("DO YOU NEED INSTRUCTION (Y)ES OR (N)O");
+	ddwrgetinput('ddinstruction');
+}
+
+function ddinstruction(cliinput)
+{
+	if((cliinput == 'Y') || (cliinput == 'YES'))
+	{
+		//01730
+		ddwr("WHO SAID YOU COULD PLAY");
+		return;
+	}
+	else if((cliinput == 'N') || (cliinput == 'NO'))
+	{
+		//00380
+		ddwr("(O)LD OR (N)EW GAME");
+		ddwrgetinput('ddoldnewgame');
+	}
+	else
+	{
+		ddwrgetinput('ddinstruction');
+	}
+}
+
+function ddoldnewgame(cliinput)
+{
+	if((cliinput == 'O') || (cliinput == 'OLD'))
+	{
+		//TODO 01770
+		ddwr("NOT IMPLEMENTED YET");
+		ddwr("(O)LD OR (N)EW GAME");
+		ddwrgetinput('ddoldnewgame');
+		return;
+	}
+	else if((cliinput == 'N') || (cliinput == 'NEW'))
+	{
+		ddwr("DUNGEON #");
+		ddwrgetinput('dddungeonnumber');
+		return;
+	}
+	else
+	{
+		ddwrgetinput('ddoldnewgame');
+	}
+}
+
+function dddungeonnumber(cliinput)
+{
+	ddglobal['D'] = 99;
+	if(cliinput == '0')
+	{
+		ddglobal['D'] = 0;
+	}
+	else if(cliinput == '1')
+	{
+		ddglobal['D'] = 1;
+	}
+	else
+	{
+		ddwrgetinput('dddungeonnumber');
+	}
+	if((ddglobal['D'] >= 0) && (ddglobal['D'] <= 6))
+	{
+		ddwr("CONTINUES RESET 1=YES,2=NO ");
+		ddwrgetinput('ddcontinuereset');
+	}
+}
+
+/*
+line 00422
+*/
+function ddcontinuereset(cliinput)
+{
+	ddglobal['J6'] = 99;
+	if(cliinput == '1')
+	{
+		ddglobal['J6'] = 1;
+	}
+	else if(cliinput == '2')
+	{
+		ddglobal['J6'] = 2;
+	}
+	else
+	{
+		ddwrgetinput('ddcontinuereset');
+	}
+	if((ddglobal['J6'] == 1) || (ddglobal['J6'] == 2))
+	{
+		ddwr("PLAYERS NME ");
+		ddwrgetinput('ddplayersname');
+	}
+}
+
+/*
+
+*/
+function ddplayersname(cliinput)
+{
+	ddglobal['NS'] = 99;
+	if(cliinput == 'SHAVS')
+	{
+		ddgeneratestats();
+		ddclassification_pre();
+	}
+	else
+	{
+		//01730
+		ddwr("WHO SAID YOU COULD PLAY");
+		return;
+	}
+}
+
+/*
+line 00470
+*/
+function ddgeneratestats()
+{
+	ddglobal['C'] = Array();
+	for(var M = 1; M <= 7; M++)
+	{
+		ddglobal['C'][M] = 0;
+		for(var N = 1; N <= 3; N++)
+		{
+			var R = Math.floor(Math.random() * 6) + 1;
+			ddglobal['C'][M] = ddglobal['C'][M] + R;
+		}
+		if(M != 7)
+		{
+			ddwr("="+ddglobal['C'][M]);
+		}
+		else
+		{
+			ddglobal['C'][M] = ddglobal['C'][M] * 15;
+		}
+	}
+}
+
+/*
+line 00580
+*/
+function ddclassification_pre()
+{
+	ddwr("");
+	ddwr("WHO SAID YOU COULD PLAY");
+	ddwr("WHICH DO YOU WANT TO BE");
+	ddwr("(F)IGHTER ,(C)LERIC ,OR (W)IZARD");
+	ddwrgetinput('ddclassification');
+}
+
+/*
+line 00620
+*/
+function ddclassification(cliinput)
+{
+	ddglobal['CS'] = '';
+	if((cliinput == 'F') || (cliinput == 'FIGHTER'))
+	{
+		ddglobal['CS'] = 'FIGHTER';
+	}
+	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
+	{
+		ddglobal['CS'] = 'CLERIC';
+	}
+	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
+	{
+		ddglobal['CS'] = 'WIZARD';
+	}
+}
+
+
+
+
+
+
+
+
+
+/*
+utility functions
+*/
+
+function ddwr(txtscalar)
+{
+	//document.write(txtscalar);
+	//document.write("<br>\n");
+	consoleobj.innerHTML = consoleobj.innerHTML + txtscalar + "\n";
+}
+
+function ddwrgetinput(passfunctionname)
+{
+	passthru = passfunctionname;
+	if(commandobj.value)
+	{
+		commandobj.value = '';
+	}
+	commandobj.focus();
+}
+
+function ddcliinterpreter(inputobj)
+{
+	var cliinput = '';
+	if(inputobj.value)
+	{
+		cliinput = inputobj.value;
+		cliinput = cliinput.toUpperCase();
+	}
+	//DANGER WIL ROBINSON
+	var execcom = passthru+'("'+cliinput+'")';
+	eval(execcom);
+	//LATER remove eval and write out by hand for security
+	if(passthru == 'ddinstruction')
+	{
+		//ddinstruction(cliinput);
+	}
+	else if(passthru == '')
+	{
+
+	}
+}
+</script>
+</head>
+<body>
+
+<script>
+
+ddinit();
+</script>
+
+</body>
