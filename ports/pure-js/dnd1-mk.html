@@ -716,6 +716,7 @@ function ddcheckmovespot()
 	else if( tiletypenumber == 1 )
 	{
 		//GOTO 02480
+		ddwr("YOU RAN INTO A WALL");
 		ddranintowall();
 	}
 	else if( tiletypenumber == 2 )
@@ -730,17 +731,18 @@ function ddcheckmovespot()
 	}
 	else if( tiletypenumber == 4 )
 	{
-		ddsimplemove();
+		ddwr("YOU RAN INTO A DOOR");
+		ddranintowall();
 	}
 	else if( tiletypenumber == 5 )
 	{
 		//GOTO 03060
-		ddsimplemove();
+		ddranintomonster();
 	}
 	else if( tiletypenumber == 6 )
 	{
 		//GOTO 02413
-		ddsimplemove();
+		ddranintogold();
 	}
 	else if( tiletypenumber == 7 )
 	{
@@ -769,7 +771,8 @@ line 02480
 */
 function ddranintowall()
 {
-	ddwr("YOU RAN INTO A WALL");
+	//moved message out since this is used by runintodoor
+	//ddwr("YOU RAN INTO A WALL");
 	if( ddrandom(1, 12) > 9 )
 	{
 		ddwr("AND LOOSE 1 HIT POINT");
@@ -858,6 +861,7 @@ function ddcheckforrope()
 function ddnospikedead()
 {
 	ddwr("NO SPIKES AH THATS TOO BAD CAUSE YOUR DEAD ");
+	ddendprogram();
 }
 
 /*
@@ -1017,9 +1021,73 @@ function ddranintosecret()
 	}
 	else
 	{
+		ddwr();
+		ddwr("YOU RAN INTO A WALL");
 		ddranintowall();
 	}
 }
+
+/*
+line
+*/
+function ranintomonster()
+{
+	ddwr("YOU RAN INTO THE MONSTER ");
+	ddwr("HE SHOVES YOU BACK")
+	ddwr("");
+	if( ddrandom(1, 2) == 2 )
+	{
+		ddmaintimeloop();
+	}
+	else
+	{
+		ddwr("YOU LOOSE 6 HIT POINT ");
+		ddglobal['C'][0] = ddglobal['C'][0] - 6;
+		ddmaintimeloop();
+	}
+}
+
+/*
+line 02413
+*/
+function ddranintogold()
+{
+	var locg = ddglobal['G'] + ddglobal['S'];
+	var loch = ddglobal['H'] + ddglobal['T'];
+	ddwr("AH......GOLD.......");
+	ddglobal['G9'] = ddrandom(1, 500) + 10;
+	ddwr(ddglobal['G9']+"PIECES");
+	ddglobal['C'][7] = ddglobal['C'][7] + ddglobal['G9'];
+	ddwr("GP= "+ddglobal['C'][7]);
+	ddglobal['DA'][locg][loch] = 0;
+	if( ddrandom(1, 100) < 20 )
+	{
+		ddwr("       POISON      ");
+		ddglobal['C'][0] = ddglobal['C'][0] - ddrandom(1, 4);
+		ddwr("HP= "+ddglobal['C'][0]);
+		ddglobal['G'] = ddglobal['G'] + ddglobal['S'];
+		ddglobal['H'] = ddglobal['H'] + ddglobal['T'];
+		ddwr("DONE");
+		ddmaintimeloop();
+	}
+	else
+	{
+		ddglobal['G'] = ddglobal['G'] + ddglobal['S'];
+		ddglobal['H'] = ddglobal['H'] + ddglobal['T'];
+		ddwr("DONE");
+		ddmaintimeloop();
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1078,6 +1146,14 @@ function ddrandom(low, high)
 {
 	var randomnumber = Math.floor((Math.random() * high) + 1);
 	return randomnumber;
+}
+
+/*
+Throw error to end program
+*/
+function ddendprogram()
+{
+	throw new Error("Program has terminated");
 }
 
 /*
@@ -1146,18 +1222,18 @@ function dddungeondata1()
 	var durow = Array();
 	var ducol = Array();
 durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
-durow[1]  = "1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,0,0,7,1,1,1,0,1";
-durow[2]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,6,0,1,0,0,1";
-durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,3,1,0,0,0,1,0,0,1";
-durow[5]  = "1,4,1,1,0,0,1,3,1,1,1,0,1,4,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[1]  = "1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,0,7,1,1,1,0,1";
+durow[2]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
+durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,4,6,0,1,0,0,1";
+durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
+durow[5]  = "1,4,1,1,0,0,1,3,1,1,1,0,1,4,1,0,1,1,1,0,0,1,1,1,0,1";
 durow[6]  = "1,0,0,0,0,0,2,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
 durow[7]  = "1,0,1,3,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1";
 durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,4,1,1,0,1";
 durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,4,1,1,1,0,1,0,0,0,0,0,1,0,0,1";
-durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,1,1,0,1,0,1,1,0,1,4,1,1,1";
-durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,1,1,0,1,0,0,1,0,1,0,0,0,1";
-durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,1,0,1,0,7,0,1";
+durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,4,1,1,1";
+durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,0,0,0,1";
+durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,4,1,0,1,1,1,1,0,1,0,7,0,1";
 durow[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
 durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,1,1,1,3,1";
 durow[15] = "1,0,1,2,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
@@ -1168,8 +1244,8 @@ durow[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1";
 durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,3,0,0,0,7,0,0,0,1";
 durow[21] = "1,0,1,4,1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,1,0,0,0,0,0,1";
 durow[22] = "1,0,1,0,1,0,0,1,0,0,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,1";
-durow[23] = "1,0,1,1,2,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
-durow[24] = "1,0,1,0,1,6,0,1,0,0,1,0,3,0,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[23] = "1,0,1,1,1,2,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[24] = "1,0,4,6,1,6,0,1,0,0,4,0,3,0,1,0,1,0,0,1,0,0,0,0,0,1";
 durow[25] = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
 	for(var M = 0; M <= 25; M++)
 	{
