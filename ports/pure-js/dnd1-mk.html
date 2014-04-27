@@ -641,7 +641,7 @@ function ddmaintimeloop()
 }
 
 /*
-line 2170
+line 02170
 */
 function ddmovearound_pre()
 {
@@ -672,13 +672,13 @@ function ddmovearound(cliinput)
 	}
 	else if( (cliinput == 'U') || (cliinput == 'UP') || (cliinput == 'N') || (cliinput == 'NORTH') )
 	{
-		ddglobal['S'] = 1;
+		ddglobal['S'] = -1;
 		ddglobal['T'] = 0;
 		ddcheckmovespot();
 	}
 	else if( (cliinput == 'D') || (cliinput == 'DOWN') || (cliinput == 'S') || (cliinput == 'SOUTH') )
 	{
-		ddglobal['S'] = -1;
+		ddglobal['S'] = 1;
 		ddglobal['T'] = 0;
 		ddcheckmovespot();
 	}
@@ -708,12 +708,12 @@ function ddcheckmovespot()
 	else if( tiletypenumber == 1 )
 	{
 		//GOTO 02480
-		ddsimplemove();
+		ddranintowall();
 	}
 	else if( tiletypenumber == 2 )
 	{
 		//GOTO 02550
-		ddsimplemove();
+		ddranintotrap();
 	}
 	else if( tiletypenumber == 3 )
 	{
@@ -755,6 +755,144 @@ function ddsimplemove()
 	ddglobal['H'] = ddglobal['H'] + ddglobal['T'];
 	ddmaintimeloop();
 }
+
+/*
+line 02480
+*/
+function ddranintowall()
+{
+	ddwr("YOU RAN INTO A WALL");
+	if( ddrandom(1, 12) > 9 )
+	{
+		ddwr("AND LOOSE 1 HIT POINT");
+		ddglobal['C'][0] = ddglobal['C'][0] - 1;
+	}
+	else
+	{
+		ddwr("BUT NO DAMAGE WAS INFLICTED");
+	}
+	ddmaintimeloop();
+}
+
+/*
+line 02550
+*/
+function ddranintotrap()
+{
+	ddwr("OOOOPS A TRAP AND YOU FELL IN ");
+	if( ddrandom(1, 3) > 2 )
+	{
+		ddwr("AND HIT POINTS LOOSE 1");
+		ddglobal['C'][0] = ddglobal['C'][0] - 1;
+	}
+	ddwr("I HOPE YOU HAVE SOME SPIKES AND PREFERABLY ROPE");
+	ddwr("LET ME SEE");
+	var inventoryspike = ddcheckforspike();
+	var inventoryrope = ddcheckforrope();
+	if( inventoryspike != 0 )
+	{
+		//line 02640
+		ddglobal['W'][inventoryspike] = 0;
+		if( inventoryrope != 0 )
+		{
+			ddglobal['W'][inventoryspike] = 0;
+			ddwr("GOOD BOTH");
+			ddtrapescape();
+		}
+		else
+		{
+			ddnoropebutspike();
+		}
+	}
+	else
+	{
+		ddnospikedead();
+	}
+
+}
+
+/*
+line 02620
+*/
+function ddcheckforspike()
+{
+	var inventorylocation = false;
+	for(var M = 1; M <= ddglobal['X']; M++)
+	{
+		if( ddglobal['W'][M] == 12 )
+		{
+			inventorylocation = M;
+		}
+	}
+	return inventorylocation;
+}
+
+/*
+line 02680
+*/
+function ddcheckforrope()
+{
+	var inventorylocation = 0;
+	for(var M = 1; M <= ddglobal['X']; M++)
+	{
+		if( ddglobal['W'][M] == 11 )
+		{
+			inventorylocation = M;
+		}
+	}
+	return inventorylocation;
+}
+
+/*
+02740 PRINT "NO SPIKES AH THATS TOO BAD CAUSE YOUR DEAD "
+02750 STOP
+*/
+function ddnospikedead()
+{
+	ddwr("NO SPIKES AH THATS TOO BAD CAUSE YOUR DEAD ");
+}
+
+/*
+line 02890
+*/
+function ddnoropebutspike()
+{
+	ddwr("NO ROPE BUT AT LEAS SPIKES");
+	if( (ddrandom(1, 3) + 1) == 2 )
+	{
+		//line 02960
+		ddwr("OOPS H.P. LOOSE 1");
+		ddglobal['C'][0] = ddglobal['C'][0] - 1;
+		ddwr("TRY AGAIN ");
+		//seems like a pontential bug
+		//keep losing hit points in rare circumstances
+		//long after character is already dead
+		ddnoropebutspike();
+	}
+	else
+	{
+		ddtrapescape();
+	}
+}
+
+/*
+line 02770
+*/
+function ddtrapescape()
+{
+	ddwr("YOU MANAGE TO GET OUT EASY");
+	ddwr("YOUR STANDING NEXT TO THE EDGE THOUGH I'D MOVE");
+	//GOTO 02170
+	//gets a free move to get off trap spot
+	ddmovearound_pre();
+}
+
+
+
+
+
+
+
 
 
 
@@ -863,10 +1001,11 @@ function ddinitglobalmemory()
 	//DA is the current dungeon being played DA was just D(0,0) in the original
 	ddglobal['DA'] = Array();
 	//FILE replaces the file routines in the original
+	//TODO change dddungeondata1 to 2, 3, 4 etc...
 	ddglobal['FILE'] = Array();
 	ddglobal['FILE'][0] = Array();
 	ddglobal['FILE'][1] = dddungeondata1();
-	ddglobal['FILE'][2] = dddungeondata1();
+	ddglobal['FILE'][2] = dddungeondata2();
 	ddglobal['FILE'][3] = dddungeondata1();
 	ddglobal['FILE'][4] = dddungeondata1();
 	ddglobal['FILE'][5] = dddungeondata1();
@@ -879,41 +1018,80 @@ function ddinitglobalmemory()
 
 function dddungeondata1()
 {
-	var d1array = Array();
-	var d1row = Array();
-	var d1col = Array();
-d1row[0]  = "1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
-d1row[1]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,7,1,1,1,0,1";
-d1row[2]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-d1row[3]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,6,0,1,0,0,1";
-d1row[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-d1row[5]  = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
-d1row[6]  = "1,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
-d1row[7]  = "1,0,1,0,1,0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1";
-d1row[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,1";
-d1row[9]  = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
-d1row[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
-d1row[11] = "1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
-d1row[12] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,7,0,1";
-d1row[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,1";
-d1row[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1";
-d1row[15] = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-d1row[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,2,0,1,0,0,1";
-d1row[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-d1row[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
-d1row[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
-d1row[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,0,0,0,0,7,0,0,0,1";
-d1row[21] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
-d1row[22] = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
-d1row[23] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
-d1row[24] = "1,0,1,0,1,6,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
-d1row[25] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+	var duarray = Array();
+	var durow = Array();
+	var ducol = Array();
+durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
+durow[1]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,7,1,1,1,0,1";
+durow[2]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[3]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,6,0,1,0,0,1";
+durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[5]  = "1,0,1,1,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[6]  = "1,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
+durow[7]  = "1,0,1,0,1,0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1";
+durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,1";
+durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,7,0,1";
+durow[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,1";
+durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[15] = "1,0,1,2,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,2,0,1,2,0,1,0,0,1";
+durow[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,0,0,0,0,7,0,0,0,1";
+durow[21] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+durow[22] = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[23] = "1,0,1,1,2,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[24] = "1,0,1,0,1,6,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[25] = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
 	for(var M = 0; M <= 25; M++)
 	{
-		d1column = d1row[M].split(',');
-		d1array[M] = d1column;
+		ducolumn = durow[M].split(',');
+		duarray[M] = ducolumn;
 	}
-	return d1array;
+	return duarray;
+}
+
+function dddungeondata2()
+{
+	var duarray = Array();
+	var durow = Array();
+	var ducol = Array();
+durow[0]  = "1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+durow[1]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,7,1,1,1,0,1";
+durow[2]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[3]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,6,0,1,0,0,1";
+durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[5]  = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[6]  = "1,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
+durow[7]  = "1,0,1,0,1,0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1";
+durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,1";
+durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,7,0,1";
+durow[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,1";
+durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[15] = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,2,0,1,0,0,1";
+durow[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,0,0,0,1,1,1,0,1";
+durow[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1";
+durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,0,0,0,0,7,0,0,0,1";
+durow[21] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+durow[22] = "1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[23] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[24] = "1,0,1,0,1,6,0,1,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[25] = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,0,1";
+	for(var M = 0; M <= 25; M++)
+	{
+		ducolumn = durow[M].split(',');
+		duarray[M] = ducolumn;
+	}
+	return duarray;
 }
 
 function dddisplaydungeon(dungeonmaparray)
