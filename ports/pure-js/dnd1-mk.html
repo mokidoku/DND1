@@ -496,11 +496,13 @@ function ddcommandlist(cliinput)
 	{
 		ddglobal['T'] = 3;
 		//GOTO 03430
+		ddsearchforsecret();
 	}
 	else if(cliinput == 4)
 	{
 		ddglobal['T'] = 4;
 		//GOTO 03640
+		ddequipweapon_pre();
 	}
 	else if(cliinput == 5)
 	{
@@ -1129,8 +1131,104 @@ function ddincreasecon()
 	ddmaintimeloop();
 }
 
+/*
+03430
+*/
+function ddsearchforsecret()
+{
 
+	ddwr("SEARCH.........SEARCH...........SEARCH...........");
+	if( ddrandom(1,40) < (ddglobal['C'][5] + ddglobal['C'][6]) )
+	{
+		var foundflag = 0;
+		for(var M = -1; M <= 1; M++)
+		{
+			for(var N = -1; N <= 1; N++)
+			{
+				var locg = ddglobal['G'] + M;
+				var loch = ddglobal['H'] + N;
+				if(ddglobal['DA'][locg][loch] == 2)
+				{
+					foundflag = 1;
+					ddwr("YES THERE IS A TRAP");
+					ddwr("IT IS "+M+"VERTICALY  "+N+"HORAZONTALY FROM YOU");
+					//need to look into what Z is about
+					ddglobal['Z'] = 1;
+				}
+				else if(ddglobal['DA'][locg][loch] == 3)
+				{
+					foundflag = 1;
+					ddwr("YES A DOOR");
+					ddwr("IT IS AT "+M+"VERTICALY  "+N+"HORAZANTALY");
+					//need to look into what Z is about
+					ddglobal['Z'] = 1;
+				}
+			}
+		}
+		if( foundflag == 0 )
+		{
+			ddwr("NO NOT THAT YOU CAN TELL");
+			ddmaintimeloop();
+		}
+	}
+	else
+	{
+		ddwr("NO NOT THAT YOU CAN TELL");
+		ddmaintimeloop();
+	}
+}
 
+/*
+line 03640
+*/
+function ddequipweapon_pre()
+{
+	ddwr("WHICH WEAPON WILL YOU HOLD, NUM OF WEAPON ");
+	ddwrgetinput('ddequipweapon');
+}
+
+/*
+line 03650
+*/
+function ddequipweapon(cliinput)
+{
+	ddglobal['Y'] = cliinput;
+	if(cliinput == 0)
+	{
+		//i think entering 0 is suppose to leave you empty handed
+		//ddwr("O.K. YOU ARE NOW HOLDING A "+ddglobal['IS'][cliinput]);
+		ddwr("YOU ARE NOW EMPTY HANDED");
+		ddglobal['J'] = 0;
+		ddmaintimeloop();
+	}
+	else if( (cliinput >= 1 ) && (cliinput <= 16) )
+	{
+		var itemfound = null;
+		for(var M = 1; M <= ddglobal['X']; M++)
+		{
+			if(ddglobal['W'][M] == cliinput)
+			{
+				itemfound = M;
+			}
+		}
+		if(itemfound != null)
+		{
+			ddwr("O.K. YOU ARE NOW HOLDING A "+ddglobal['IS'][cliinput]);
+			ddglobal['J'] = cliinput;
+			ddmaintimeloop();
+		}
+		else
+		{
+			ddwr("SORRY YOU DONT HAVE THAT ONE");
+			ddequipweapon_pre();
+		}
+	}
+	else
+	{
+		//we have unknown input
+		ddequipment_pre();
+	}
+}
 
 
 
@@ -1275,7 +1373,7 @@ function dddungeondata1()
 	var durow = Array();
 	var ducol = Array();
 durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
-durow[1]  = "1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,0,7,1,1,1,0,1";
+durow[1]  = "1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,0,6,1,1,1,0,1";
 durow[2]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
 durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,4,6,0,1,0,0,1";
 durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
@@ -1286,8 +1384,8 @@ durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,4,1,1,0,1";
 durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,4,1,1,1,0,1,0,0,0,0,0,1,0,0,1";
 durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,4,1,1,1";
 durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,0,0,0,1";
-durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,4,1,0,1,1,1,1,4,1,0,7,6,1";
-durow[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
+durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,4,1,0,1,1,1,1,4,1,0,6,6,1";
+durow[13] = "1,0,0,2,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
 durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,1,1,1,3,1";
 durow[15] = "1,0,1,6,1,6,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
 durow[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,2,0,0,2,0,1,0,6,1";
