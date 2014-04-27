@@ -508,6 +508,7 @@ function ddcommandlist(cliinput)
 	{
 		ddglobal['T'] = 5;
 		//GOTO 03750
+		ddfightback();
 	}
 	else if(cliinput == 6)
 	{
@@ -519,11 +520,13 @@ function ddcommandlist(cliinput)
 	{
 		ddglobal['T'] = 7;
 		//GOTO 06610
+		ddsavegame();
 	}
 	else if(cliinput == 8)
 	{
 		ddglobal['T'] = 8;
 		//GOTO 08680
+		ddcastmagic();
 	}
 	else if(cliinput == 9)
 	{
@@ -1230,13 +1233,158 @@ function ddequipweapon(cliinput)
 	}
 }
 
+/*
+line 03750
+*/
+function ddfightback()
+{
+	var weaponnumber = ddglobal['J'];
+	ddwr("YOUR WEAPON IS "+ddglobal['IS'][weaponnumber]);
+	if( ddglobal['K'] == 0 )
+	{
+		//no monster to fight
+		//show command list again
+		ddwr("YOU ATTACK THE DARKNESS");
+		ddcommandlist_pre();
+	}
 
+}
 
+/*
+line 06610
+*/
+function ddsavegame()
+{
+	//ddglobal['FILE'][7] = Array();
+	var savearray = Array();
 
+	savearray['D'] = ddglobal['D'];
+	savearray['X'] = ddglobal['X'];
+	savearray['J'] = ddglobal['J'];
+	savearray['G'] = ddglobal['G'];
+	savearray['H'] = ddglobal['H'];
+	savearray['K'] = ddglobal['K'];
 
+}
 
+/*
+line
+*/
+function ddcastmagic()
+{
+	if( ddglobal['J'] != 0 )
+	{
+		//lose a turn!
+		ddwr("YOU CANT USE MAGIC WITH WEAPON IN HAND");
+		ddmaintimeloop();
+	}
+	else if( (ddglobal['CS'][0] == "CLERIC") )
+	{
+		ddwr("CLERICAL SPELL #");
+		ddwrgetinput('ddcastcleric');
+	}
+	else if( (ddglobal['CS'][0] == "WIZARD") )
+	{
+		ddwr("SPELL #");
+		ddwrgetinput('ddcastwizard');
+	}
+	else
+	{
+		//lose a turn!
+		ddwr("YOU CANT TSE MAGIC YOUR NOT A M.U.");
+		ddmaintimeloop();
+	}
+}
 
+/*
+line 08760
+*/
+function ddcastcleric(cliinput)
+{
+	ddglobal['Q'] = cliinput;
+	if( (cliinput >= 1) && (cliinput <= ddglobal['X1']) )
+	{
+		var havespellflag = null;
+		for(var M = 1; M <= ddglobal['X1']; M++)
+		{
+			if( cliinput == ddglobal['X2'][M] )
+			{
+				var havespellflag = M;
+			}
+		}
+		if( havespellflag != null )
+		{
+			//GOTO 08830
+			dddetermineclericspelleffect();
+		}
+		else
+		{
+			//lose a turn!
+			ddwr("YOU DONT HAVE THAT SPELL");
+			ddmaintimeloop();
+		}
+	}
+	else
+	{
+		//we have unknown input
+	}
+}
 
+/*
+line 08830
+*/
+function dddetermineclericspelleffect()
+{
+	ddwr("YOU CAST A CLERIC SPELL");
+	ddwr("NOT IMPLEMENTED YET");
+	ddmaintimeloop();
+}
+
+/*
+line 09310
+X3 must be the master wizard spell list count
+X4 must be what the player has purchased
+*/
+function ddcastwizard(cliinput)
+{
+	ddglobal['Q'] = cliinput;
+	if( (cliinput >= 1) && (cliinput <= ddglobal['X3']) )
+	{
+		var havespellflag = null;
+		for(var M = 1; M <= ddglobal['X3']; M++)
+		{
+			if( cliinput == ddglobal['X4'][M] )
+			{
+				var havespellflag = M;
+			}
+		}
+		if( havespellflag != null )
+		{
+			//GOTO 09390
+			dddeterminewizardspelleffect();
+		}
+		else
+		{
+			//lose a turn!
+			ddwr("YOU DONT HAVE THAT SPELL");
+			ddmaintimeloop();
+		}
+	}
+	else
+	{
+		//we have unknown input
+	}
+}
+
+/*
+line 09390
+*/
+function dddeterminewizardspelleffect()
+{
+	ddwr("YOU CAST A WIZARD SPELL");
+	ddwr("NOT IMPLEMENTED YET");
+	ddmaintimeloop();
+}
 
 
 
@@ -1277,8 +1425,11 @@ function ddcliinterpreter(inputobj)
 	//TODO possibly set inputobj.value to empty string
 	//WHY? to prevent multiple calls
 	//DANGER WIL ROBINSON
-	var execcom = passthru+'("'+cliinput+'")';
-	eval(execcom);
+	if(passthru != '')
+	{
+		var execcom = passthru+'("'+cliinput+'")';
+		eval(execcom);
+	}
 	//LATER remove eval and write out by hand for security
 	if(passthru == 'ddinstruction')
 	{
@@ -1304,6 +1455,7 @@ Throw error to end program
 */
 function ddendprogram()
 {
+	passthru = '';
 	throw new Error("Program has terminated");
 }
 
@@ -1365,6 +1517,12 @@ function ddinitglobalmemory()
 	//H is column location
 	ddglobal['G'] = ddrandom(1, 23) + 1;
 	ddglobal['H'] = ddrandom(1, 23) + 1;
+	//K is if there is a monster to fight or not
+	ddglobal['K'] = 0;
+	//FILE 7 is to save the game
+	ddglobal['FILE'][7] = Array();
+	//J is what weapon is in hand
+	ddglobal['J'] = 0;
 }
 
 function dddungeondata1()
