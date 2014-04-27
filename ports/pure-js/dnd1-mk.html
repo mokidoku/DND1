@@ -618,13 +618,25 @@ function ddseeversusreal(lookm, lookn)
 		//secret door
 		displaychar = '*';
 	}
-	else if( tiletypenumber == 7)
+	else if( tiletypenumber == 4)
+	{
+		displaychar = '4';
+	}
+	else if( tiletypenumber == 5)
+	{
+		displaychar = '5';
+	}
+	else if( tiletypenumber == 6)
 	{
 		displaychar = 'O';
 	}
+	else if( tiletypenumber == 7)
+	{
+		displaychar = '8';
+	}
 	else if( tiletypenumber == 8)
 	{
-		displaychar = 'O';
+		displaychar = '8';
 	}
 	else
 	{
@@ -1087,7 +1099,7 @@ line 02424
 function ddincreasestr()
 {
 	//the original code did not give a message
-	ddwr("A STRANGE POOL");
+	ddwr("A STRANGE VAPOR");
 	var locg = ddglobal['G'] + ddglobal['S'];
 	var loch = ddglobal['H'] + ddglobal['T'];
 	ddglobal['C'][1] = ddglobal['C'][1] + 1;
@@ -1277,11 +1289,11 @@ durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,0,0,0,1";
 durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,4,1,0,1,1,1,1,4,1,0,7,6,1";
 durow[13] = "1,0,0,7,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
 durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,1,1,1,3,1";
-durow[15] = "1,0,1,2,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[15] = "1,0,1,6,1,6,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
 durow[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,2,0,0,2,0,1,0,6,1";
 durow[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
 durow[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,1,0,0,1,1,1,4,1";
-durow[19] = "1,0,0,0,7,0,3,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1";
+durow[19] = "1,0,0,0,6,0,3,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1";
 durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,3,0,0,0,7,0,0,0,1";
 durow[21] = "1,0,1,4,1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,1,0,0,0,0,0,1";
 durow[22] = "1,0,1,0,1,0,0,1,0,0,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,1";
