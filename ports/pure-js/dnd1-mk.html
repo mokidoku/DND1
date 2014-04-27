@@ -528,6 +528,7 @@ function ddcommandlist(cliinput)
 	else if(cliinput == 10)
 	{
 		ddglobal['T'] = 10;
+		ddlookcheat();
 		//GOTO 10730
 	}
 	else if(cliinput == 11)
@@ -887,7 +888,23 @@ function ddtrapescape()
 	ddmovearound_pre();
 }
 
-
+/*
+line 10740
+*/
+function ddlookcheat()
+{
+	for(var M = 0; M <= 25; M++)
+	{
+		var linetext = '';
+		for(var N = 0; N <=25; N++)
+		{
+			linetext = linetext+''+ddglobal['DA'][M][N];
+		}
+		ddwr(linetext);
+	}
+	//GOTO 01590
+	ddcommandlist_pre();
+}
 
 
 
