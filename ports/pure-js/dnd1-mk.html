@@ -189,13 +189,13 @@ function ddclassification(cliinput)
 	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
 	{
 		ddglobal['CS'][0] = 'CLERIC';
-		ddglobal['C'][0] = ddrandom(1, 8);
+		ddglobal['C'][0] = ddrandom(1, 6);
 		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
 	{
 		ddglobal['CS'][0] = 'WIZARD';
-		ddglobal['C'][0] = ddrandom(1, 8);
+		ddglobal['C'][0] = ddrandom(1, 6);
 		ddbuyingweapons_pre();
 	}
 	else if(cliinput == 'NONE')
@@ -532,6 +532,7 @@ function ddcommandlist(cliinput)
 	{
 		ddglobal['T'] = 9;
 		//GOTO 09980
+		ddbuymagic();
 	}
 	else if(cliinput == 10)
 	{
@@ -1385,6 +1386,117 @@ function dddeterminewizardspelleffect()
 	ddwr("NOT IMPLEMENTED YET");
 	ddmaintimeloop();
 }
+
+/*
+line 09980
+*/
+function ddbuymagic()
+{
+	if( ddglobal['CS'][0] == 'CLERIC' )
+	{
+		//ddwr("DO YOU KNOW THE CHOICES ");
+		ddwr("DO YOU KNOW THE CHOICES (Y)ES (N)O");
+		ddwrgetinput('ddlistclericmagic');
+	}
+	else if( ddglobal['CS'][0] == 'WIZARD' )
+	{
+		ddwr("DO YOU KNOW THE SPELLS");
+		//ddwrgetinput('ddlistwizardmagic');
+	}
+	else
+	{
+		ddwr("YOU CANT BUY ANY");
+		ddcommandlist_pre();
+	}
+}
+
+/*
+line 10030
+*/
+function ddlistclericmagic(cliinput)
+{
+	ddglobal['QS'] = cliinput;
+	if( (cliinput == 'Y') || (cliinput == 'YES') )
+	{
+		ddwrgetinput('ddbuyclericmagic');
+	}
+	else
+	{
+		ddwr("1-KILL-500  5-MAG. MISS. #1-100");
+		ddwr("2-MAG. MISS. #2-200  6-MAG. MISS. #3-300");
+		ddwr("3-CURE LHGHT #1-200  7-CURE LIGHT #2-1000");
+		ddwr("4-FIND ALL TRAPS-200  8-FIND ALL S.DOORS-200");
+		//ddwr("INPUT # WANTED   NEG.NUM.TO STOP");
+		ddwr("INPUT # WANTED   (0) TO STOP");
+		ddwrgetinput('ddbuyclericmagic');
+	}
+}
+
+/*
+line 10100
+*/
+function ddbuyclericmagic(cliinput)
+{
+	cliinput = parseInt(cliinput);
+	ddglobal['Q'] = cliinput;
+	//TODO spell costs are set here
+	//might want to move to init global
+	ddglobal['X5'] = Array('skip0');
+	ddglobal['X5'][1] = 500;
+	ddglobal['X5'][2] = 200;
+	ddglobal['X5'][3] = 200;
+	ddglobal['X5'][4] = 200;
+	ddglobal['X5'][5] = 100;
+	ddglobal['X5'][6] = 300;
+	ddglobal['X5'][7] = 1000;
+	ddglobal['X5'][8] = 200;
+	if(cliinput < 1)
+	{
+		ddlistcharacterclericspells();
+	}
+	else if (cliinput > 10)
+	{
+		//try again
+		ddwrgetinput('ddbuyclericmagic');
+	}
+	else
+	{
+		//TODO there are only 8 spells
+		//what if character chooses 9 or 10 here
+		//check if character can afford it
+		if( (ddglobal['C'][7] - ddglobal['X5'][cliinput]) < 0 )
+		{
+			ddwr("COSTS TOO MUCH");
+			ddwrgetinput('ddbuyclericmagic');
+		}
+		else
+		{
+			ddglobal['C'][7] = ddglobal['C'][7] - ddglobal['X5'][cliinput];
+			ddwr("IT IS YOURS");
+			ddglobal['X1'] = ddglobal['X1'] + 1;
+			ddglobal['X2'][ddglobal['X1']] = cliinput;
+			ddwrgetinput('ddbuyclericmagic');
+		}
+	}
+}
+
+/*
+line 10290
+*/
+function ddlistcharacterclericspells()
+{
+	ddwr("YOUR SPELLS ARE");
+	for(var M = 1; M <= ddglobal['X1']; M++)
+	{
+		if( ddglobal['X2'][M] != 0 )
+		{
+			ddwr("#"+ddglobal['X2'][M]);
+		}
+	}
+	ddwr("DONE");
+	ddcommandlist_pre();
+}
+
 
 
 
