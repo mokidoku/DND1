@@ -157,7 +157,9 @@ function ddgeneratestats()
 		}
 		else
 		{
-			ddglobal['C'][M] = ddglobal['C'][M] * 15;
+			//ddglobal['C'][M] = ddglobal['C'][M] * 15;
+			//setting gold to a 1000 for testing
+			ddglobal['C'][7] = ddglobal['C'][7] = 1000;
 		}
 	}
 }
@@ -183,19 +185,22 @@ function ddclassification(cliinput)
 	if((cliinput == 'F') || (cliinput == 'FIGHTER'))
 	{
 		ddglobal['CS'][0] = 'FIGHTER';
-		ddglobal['C'][0] = ddrandom(1, 8);
+		//ddglobal['C'][0] = ddrandom(1, 8);
+		ddglobal['C'][0] = ddglobal['C'][3] + ddrandom(1, 8);
 		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'C') || (cliinput == 'CLERIC'))
 	{
 		ddglobal['CS'][0] = 'CLERIC';
-		ddglobal['C'][0] = ddrandom(1, 6);
+		//ddglobal['C'][0] = ddrandom(1, 6);
+		ddglobal['C'][0] = ddglobal['C'][3] + ddrandom(1, 6);
 		ddbuyingweapons_pre();
 	}
 	else if((cliinput == 'W') || (cliinput == 'WIZARD'))
 	{
 		ddglobal['CS'][0] = 'WIZARD';
-		ddglobal['C'][0] = ddrandom(1, 6);
+		//ddglobal['C'][0] = ddrandom(1, 4);
+		ddglobal['C'][0] = ddglobal['C'][3] + ddrandom(1, 4);
 		ddbuyingweapons_pre();
 	}
 	else if(cliinput == 'NONE')
@@ -808,6 +813,11 @@ line 02550
 */
 function ddranintotrap()
 {
+	//not sure if this is a bug in the original code
+	//but we have to actually move the character location
+	//so they are on top of the trap spot
+	ddglobal['G'] = ddglobal['G'] + ddglobal['S'];
+	ddglobal['H'] = ddglobal['H'] + ddglobal['T'];
 	ddwr("OOOOPS A TRAP AND YOU FELL IN ");
 	if( ddrandom(1, 3) > 2 )
 	{
@@ -1635,6 +1645,10 @@ function ddinitglobalmemory()
 	ddglobal['FILE'][7] = Array();
 	//J is what weapon is in hand
 	ddglobal['J'] = 0;
+	//X1 is the count of purchased cleric spells
+	ddglobal['X1'] = 0;
+	//X2 is an array that holds the spell number
+	ddglobal['X2'] = Array('skip0');
 }
 
 function dddungeondata1()
@@ -1643,23 +1657,23 @@ function dddungeondata1()
 	var durow = Array();
 	var ducol = Array();
 durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
-durow[1]  = "1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,0,6,1,1,1,0,1";
+durow[1]  = "1,6,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,0,6,1,1,1,6,1";
 durow[2]  = "1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
 durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,4,6,0,1,0,0,1";
-durow[4]  = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
+durow[4]  = "1,0,1,6,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,1";
 durow[5]  = "1,4,1,1,0,0,1,3,1,1,1,0,1,4,1,0,1,1,1,0,0,1,1,1,0,1";
 durow[6]  = "1,0,0,0,0,0,2,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
 durow[7]  = "1,0,1,3,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1";
-durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,4,1,1,0,1";
-durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,4,1,1,1,0,1,0,0,0,0,0,1,0,0,1";
-durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,4,1,1,1";
-durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,0,0,0,1";
-durow[12] = "1,0,1,0,1,0,1,1,1,0,1,0,1,4,1,0,1,1,1,1,4,1,0,6,6,1";
+durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1";
+durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,4,1,1,1,0,1,0,0,0,0,0,4,0,0,1";
+durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,1,1";
+durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,2,1,0,0,1,0,1,0,0,0,1";
+durow[12] = "1,0,1,0,1,0,1,1,1,2,1,0,1,4,1,0,1,1,1,1,4,1,0,6,6,1";
 durow[13] = "1,0,0,2,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
 durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,1,1,1,3,1";
 durow[15] = "1,0,1,6,1,6,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
-durow[16] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,2,0,0,2,0,1,0,6,1";
-durow[17] = "1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
+durow[16] = "1,0,1,0,0,0,1,0,1,2,1,0,1,0,1,2,1,2,0,0,2,0,1,0,6,1";
+durow[17] = "1,0,1,0,0,0,1,0,1,6,1,2,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
 durow[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,1,0,0,1,1,1,4,1";
 durow[19] = "1,0,0,0,6,0,3,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1";
 durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,3,0,0,0,7,0,0,0,1";
