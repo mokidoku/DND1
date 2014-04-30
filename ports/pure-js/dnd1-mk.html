@@ -446,8 +446,8 @@ line 01470
 */
 function ddyeastart()
 {
-	ddwr("");
-	ddwr("");
+	//ddwr("");
+	//ddwr("");
 	ddwr("");
 	ddwr("WELCOME TO DUNGEON #"+ddglobal['D']);
 	ddwr("");
@@ -1410,8 +1410,8 @@ function ddbuymagic()
 	}
 	else if( ddglobal['CS'][0] == 'WIZARD' )
 	{
-		ddwr("DO YOU KNOW THE SPELLS");
-		//ddwrgetinput('ddlistwizardmagic');
+		ddwr("DO YOU KNOW THE SPELLS (Y)ES (N)O");
+		ddwrgetinput('ddlistwizardmagic');
 	}
 	else
 	{
@@ -1432,11 +1432,15 @@ function ddlistclericmagic(cliinput)
 	}
 	else
 	{
-		ddwr("1-KILL-500  5-MAG. MISS. #1-100");
-		ddwr("2-MAG. MISS. #2-200  6-MAG. MISS. #3-300");
-		ddwr("3-CURE LHGHT #1-200  7-CURE LIGHT #2-1000");
-		ddwr("4-FIND ALL TRAPS-200  8-FIND ALL S.DOORS-200");
+		//ddwr("1-KILL-500  5-MAG. MISS. #1-100");
+		//ddwr("2-MAG. MISS. #2-200  6-MAG. MISS. #3-300");
+		//ddwr("3-CURE LHGHT #1-200  7-CURE LIGHT #2-1000");
+		//ddwr("4-FIND ALL TRAPS-200  8-FIND ALL S.DOORS-200");
 		//ddwr("INPUT # WANTED   NEG.NUM.TO STOP");
+		for(var M = 1; M <= 8; M++)
+		{
+			ddwr("("+M+") - "+ddglobal['E1'][M]+" - "+ddglobal['E2'][M]);
+		}
 		ddwr("INPUT # WANTED   (0) TO STOP");
 		ddwrgetinput('ddbuyclericmagic');
 	}
@@ -1464,19 +1468,19 @@ function ddbuyclericmagic(cliinput)
 	{
 		ddlistcharacterclericspells();
 	}
-	else if (cliinput > 10)
+	else if (cliinput > 8)
 	{
 		//try again
+		ddwr("INPUT # WANTED   (0) TO STOP");
 		ddwrgetinput('ddbuyclericmagic');
 	}
 	else
 	{
-		//TODO there are only 8 spells
-		//what if character chooses 9 or 10 here
 		//check if character can afford it
 		if( (ddglobal['C'][7] - ddglobal['X5'][cliinput]) < 0 )
 		{
 			ddwr("COSTS TOO MUCH");
+			ddwr("INPUT # WANTED   (0) TO STOP");
 			ddwrgetinput('ddbuyclericmagic');
 		}
 		else
@@ -1485,6 +1489,7 @@ function ddbuyclericmagic(cliinput)
 			ddwr("IT IS YOURS");
 			ddglobal['X1'] = ddglobal['X1'] + 1;
 			ddglobal['X2'][ddglobal['X1']] = cliinput;
+			ddwr("INPUT # WANTED   (0) TO STOP");
 			ddwrgetinput('ddbuyclericmagic');
 		}
 	}
@@ -1506,6 +1511,105 @@ function ddlistcharacterclericspells()
 	ddwr("DONE");
 	ddcommandlist_pre();
 }
+
+/*
+line 10360
+*/
+function ddlistwizardmagic(cliinput)
+{
+	ddglobal['QS'] = cliinput;
+	if( (cliinput == 'Y') || (cliinput == 'YES') )
+	{
+		ddwr("#OF ONE YOU WANT   (0) TO STOP");
+		ddwrgetinput('ddbuywizardmagic');
+	}
+	else
+	{
+		//ddwr("1-PUSH-75   6-M. M. #1-100");
+		//ddwr("2-KIHL-500  7-M. M. #2-200");
+		//ddwr("3-FIND TRAPS-200  8-M. M. #3-300");
+		//ddwr("4-TELEPORT-750  9-FIND S.DOORS-200");
+		//ddwr("5-CHANGE 1+0-600  10-CHANGE 0+1-600");
+		//ddwr("#OF ONE YOU WANT  NEG.NUM.TO STOP");
+		for(var M = 0; M <= 10; M++)
+		{
+			ddwr("("+M+")- "+ddglobal['E3'][M]+" - "+ddglobal['E4'][M]);
+		}
+		ddwr("#OF ONE YOU WANT   (0) TO STOP");
+		ddwrgetinput('ddbuywizardmagic');
+	}
+}
+
+/*
+line 10450
+*/
+function ddbuywizardmagic(cliinput)
+{
+	cliinput = parseInt(cliinput);
+	ddglobal['Q'] = cliinput;
+	//TODO spell costs are set here
+	//might want to move to init global
+	ddglobal['X6'] = Array('skip0');
+	ddglobal['X6'][1] = 75;
+	ddglobal['X6'][2] = 500;
+	ddglobal['X6'][3] = 200;
+	ddglobal['X6'][4] = 750;
+	ddglobal['X6'][5] = 600;
+	ddglobal['X6'][6] = 100;
+	ddglobal['X6'][7] = 200;
+	ddglobal['X6'][8] = 300;
+	ddglobal['X6'][9] = 200;
+	ddglobal['X6'][10] = 600;
+	if(cliinput < 1)
+	{
+		ddlistcharacterwizardspells();
+	}
+	else if (cliinput > 10)
+	{
+		//try again
+		ddwr("#OF ONE YOU WANT   (0) TO STOP");
+		ddwrgetinput('ddbuywizardmagic');
+	}
+	else
+	{
+		//check if character can afford it
+		if( (ddglobal['C'][7] - ddglobal['X6'][cliinput]) < 0 )
+		{
+			ddwr("COSTS TOO MUCH");
+			ddwr("#OF ONE YOU WANT   (0) TO STOP");
+			ddwrgetinput('ddbuywizardmagic');
+		}
+		else
+		{
+			ddglobal['C'][7] = ddglobal['C'][7] - ddglobal['X6'][cliinput];
+			ddwr("IT IS YOURS");
+			ddglobal['X3'] = ddglobal['X3'] + 1;
+			ddglobal['X4'][ddglobal['X3']] = cliinput;
+			ddwr("#OF ONE YOU WANT   (0) TO STOP");
+			ddwrgetinput('ddbuywizardmagic');
+		}
+	}
+}
+
+/*
+
+*/
+function ddlistcharacterwizardspells()
+{
+	ddwr("YOUR SPELLS ARE");
+	for(var M = 1; M <= ddglobal['X3']; M++)
+	{
+		if( ddglobal['X4'][M] != 0 )
+		{
+			var spellindex = ddglobal['X4'][M];
+			ddwr("#"+spellindex+" "+ddglobal['E3'][spellindex]);
+			//ddwr("#"+ddglobal['X4'][M]);
+		}
+	}
+	ddwr("DONE");
+	ddcommandlist_pre();
+}
+
 
 
 
@@ -1649,6 +1753,54 @@ function ddinitglobalmemory()
 	ddglobal['X1'] = 0;
 	//X2 is an array that holds the spell number
 	ddglobal['X2'] = Array('skip0');
+	//enchancement idea to put all spells into arrays
+	//TODO replace ddlistclericmagic with this data
+	ddglobal['E1'] = Array('skip0');
+	ddglobal['E1'][1] = "KILL";
+	ddglobal['E1'][2] = "MAG. MISS. #2";
+	ddglobal['E1'][3] = "CURE LHGHT #1";
+	ddglobal['E1'][4] = "FIND ALL TRAPS";
+	ddglobal['E1'][5] = "MAG. MISS. #1";
+	ddglobal['E1'][6] = "MAG. MISS. #3";
+	ddglobal['E1'][7] = "CURE LIGHT #2";
+	ddglobal['E1'][8] = "FIND ALL S.DOORS";
+	ddglobal['E2'] = Array('skip0');
+	ddglobal['E2'][1] = 500;
+	ddglobal['E2'][2] = 200;
+	ddglobal['E2'][3] = 200;
+	ddglobal['E2'][4] = 200;
+	ddglobal['E2'][5] = 100;
+	ddglobal['E2'][6] = 300;
+	ddglobal['E2'][7] = 1000;
+	ddglobal['E2'][8] = 200;
+	//X3 is the count of purchased wizard spells
+	ddglobal['X3'] = 0;
+	//X4 is an array that holds the spell number
+	ddglobal['X4'] = Array('skip0');
+	//enchancement idea to put all spells into arrays
+	//TODO replace ddlistwizardmagic with this data
+	ddglobal['E3'] = Array('skip0');
+	ddglobal['E3'][1] =  "PUSH";
+	ddglobal['E3'][2] =  "KIHL";
+	ddglobal['E3'][3] =  "FIND TRAPS";
+	ddglobal['E3'][4] =  "TELEPORT";
+	ddglobal['E3'][5] =  "CHANGE 1+0";
+	ddglobal['E3'][6] =  "M. M. #1";
+	ddglobal['E3'][7] =  "M. M. #2";
+	ddglobal['E3'][8] =  "M. M. #3";
+	ddglobal['E3'][9] =  "FIND S.DOORS";
+	ddglobal['E3'][10] = "CHANGE 0+1";
+	ddglobal['E4'] = Array('skip0');
+	ddglobal['E4'][1] = 75;
+	ddglobal['E4'][2] = 500;
+	ddglobal['E4'][3] = 200;
+	ddglobal['E4'][4] = 750;
+	ddglobal['E4'][5] = 600;
+	ddglobal['E4'][6] = 100;
+	ddglobal['E4'][7] = 200;
+	ddglobal['E4'][8] = 300;
+	ddglobal['E4'][9] = 200;
+	ddglobal['E4'][10] = 600;
 }
 
 function dddungeondata1()
