@@ -674,6 +674,12 @@ function ddmaintimeloop()
 	{
 		ddplayerhurtbad();
 	}
+	if( ddglobal['K'] > 0 )
+	{
+		//GOTO 07160
+		//07160 GOSUB 08410
+		ddrangeandhitcheck();
+	}
 	if( (ddglobal['G'] == 1 ) && (ddglobal['H'] == 12) )
 	{
 		//TODO Change this into a tile number?
@@ -1908,6 +1914,90 @@ function ddequipmentshoptile(cliinput)
 		ddwrgetinput('ddequipmentshoptile');
 	}
 }
+
+/*
+line 08410
+*/
+function ddrangeandhitcheck()
+{
+	//ddglobal['R1'] = null;
+	var monsterflag = false;
+	for(var M = -25; M <= 25; M++)
+	{
+		for(var N = -25; N <= 25; N++)
+		{
+			var locg = ddglobal['G'] + M;
+			var loch = ddglobal['H'] + N;
+			if( (locg > 25) || (locg < 0) || (loch > 25) || (loch < 0) )
+			{
+				//Skip
+				//This mimics original code
+			}
+			else
+			{
+				if( ddglobal['DA'][locg][loch] == 5 )
+				{
+					monsterflag = true;
+					ddsetmonsterrange(M, N);
+				}
+			}
+		}
+	}
+	if( monsterflag == false)
+	{
+		ddglobal['R1'] = 1000;
+	}
+	ddrangetypecheckset();
+}
+
+/*
+line 08520
+*/
+function ddsetmonsterrange(monm, monn)
+{
+	ddglobal['R8'] = monm;
+	ddglobal['R9'] = monn;
+	ddglobal['R1'] = Math.sqrt( (monm * monm) + (monn * monn) );
+}
+
+/*
+line 0820
+setting R2 to 1, 2, or 3
+*/
+function ddrangetypecheckset()
+{
+	if( ddglobal['R1'] == 1000 )
+	{
+		//this is not needed.
+	}
+	else
+	{
+		//man this needs be redone. It can be confusing
+		//R1 should be set by ddsetmonsterrange by now
+
+	}
+	if( ddrandom(1, 20) > 18 )
+	{
+		//GOTO 08620
+		ddglobal['R2'] = 3;
+	}
+	else if( ddrandom(1, 20) > ddglobal['B'][ddglobal['K']][2] - (ddglobal['C'][2] / 3) )
+	{
+		//GOTO 08640
+		ddglobal['R2'] = 2;
+	}
+	else if( ddrandom(1,200) > 170 )
+	{
+		//GOTO 08660
+		ddglobal['R2'] = 1;
+	}
+}
+
+
+
+
+
+
 
 
 
