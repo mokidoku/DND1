@@ -59,7 +59,8 @@ function ddoldnewgame(cliinput)
 	}
 	else if((cliinput == 'N') || (cliinput == 'NEW'))
 	{
-		ddwr("DUNGEON #");
+		//ddwr("DUNGEON #");
+		ddwr("DUNGEON # (1) (2) (3) (4) (5) (6)");
 		ddwrgetinput('dddungeonnumber');
 		return;
 	}
@@ -75,7 +76,8 @@ function dddungeonnumber(cliinput)
 	ddglobal['D'] = cliinput;
 	if((cliinput >= 0) && (cliinput <= 6))
 	{
-		ddwr("CONTINUES RESET 1=YES,2=NO ");
+		//ddwr("CONTINUES RESET 1=YES,2=NO ");
+		ddwr("CONTINUES RESET (1)=YES,(2)=NO ");
 		ddwrgetinput('ddcontinuereset');
 	}
 	else
@@ -1809,8 +1811,8 @@ function ddinitglobalmemory()
 	ddglobal['FILE'][2] = dddungeondata2();
 	ddglobal['FILE'][3] = dddungeondata3();
 	ddglobal['FILE'][4] = dddungeondata4();
-	ddglobal['FILE'][5] = dddungeondata1();
-	ddglobal['FILE'][6] = dddungeondata1();
+	ddglobal['FILE'][5] = dddungeondata5();
+	ddglobal['FILE'][6] = dddungeondata6();
 	//G is row location
 	//H is column location
 	ddglobal['G'] = ddrandom(1, 23) + 1;
