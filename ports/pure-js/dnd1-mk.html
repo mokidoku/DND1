@@ -15,6 +15,7 @@ function ddinit()
 	//consoleobj.style.backgroundColor='#000000';
 	//consoleobj.style.color='#FFFFFF';
 	consoleobj.style.lineHeight='90%';
+	consoleobj.disabled = true;
 	commandobj = document.getElementById('command');
 	passthru = '';
 	ddinitglobalmemory();
@@ -662,12 +663,25 @@ Evrything comes here when a turn has passed.
 */
 function ddmaintimeloop()
 {
-	if( ddglobal['K1'] = -1 )
+	if( ddglobal['K1'] == -1 )
 	{
 		//A monster is dead
 		ddmonsterdead();
 	}
+	if( ddglobal['C'][0] < 2 )
+	{
+		ddplayerhurtbad();
+	}
+	if( ddglobal['G'] != 1 )
+	{
 
+	}
+
+	if( ddrandom(1, 20) > 10 )
+	{
+		//GOTO 07830
+		ddwanderingmonster();
+	}
 	//At the end of the loop we ask the player what to do again
 	ddcommandlist_pre();
 }
@@ -1697,7 +1711,7 @@ function ddgodmodemapedit(cliinput)
 }
 
 /*
-
+line 08290
 */
 function ddmonsterdead()
 {
@@ -1706,9 +1720,55 @@ function ddmonsterdead()
 	ddmaintimeloop();
 }
 
+/*
+line 08160
+*/
+function ddplayerhurtbad()
+{
+	if( ddglobal['C'][0] < 1 )
+	{
+		if( ddglobal['C'][0] < 0 )
+		{
+			if( ddglobal['C'][3] < 9 )
+			{
+				ddwr("SORRY YOUR DEAD");
+				ddendprogram();
+			}
+			else
+			{
+				ddglobal['C'][3] = ddglobal['C'][3] - 2;
+				ddglobal['C'][0] = ddglobal['C'][0] + 1;
+				ddplayerhurtbad();
+			}
+		}
+		else
+		{
+			ddwr("WATCH IT H.P.="+ddglobal['C'][0]);
+		}
+	}
+	//should return to ddmaintimeloop right where it was called
+}
 
-
-
+/*
+line
+*/
+function ddwanderingmonster()
+{
+	//loop 50 times then loop over each monster
+	for(var Z7 = 1; Z7 <= 50; Z7++)
+	{
+		for(var M = 1; M <= 10; M++)
+		{
+			if( (ddglobal['B'][M][5] >= 1 ) && ( ddrandom(1, 1000) > 925 ) )
+			{
+				ddwr("MONSTER PLACEMENT ROUTINE");
+				ddwr(ddglobal['BS'][M]);
+				//GOTO 08000
+				return;
+			}
+		}
+	}
+}
 
 /*
 utility functions
