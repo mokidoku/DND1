@@ -4,8 +4,10 @@
 <script>
 function ddinit()
 {
-	document.write('<textarea id="console" cols="80" rows="20">');
+	document.write('<textarea id="console" cols="80" rows="17">');
 	document.write('</textarea>');
+	//document.write('<pre id="console">');
+	//document.write('</pre>');
 	document.write('<input id="command" name="command" type="text" size="80" onkeydown="Javascript: if (event.keyCode==13) ddcliinterpreter(this)">');
 	document.write("\n");
 	consoleobj = document.getElementById('console');
@@ -454,13 +456,14 @@ line 01590
 */
 function ddcommandlist_pre()
 {
-	ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")");
-	ddwr("COMMANDS LIST");
+	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")");
+	//ddwr("COMMANDS LIST");
+	ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
 	ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
 	ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
 	ddwr("6=LOOK AROUND  7=SAVE GAME  8=USE MAGIC  9=BUY MAGIC");
 	ddwr("0=PASS  11=BUY H.P.");
-	ddwr("COMMAND=");
+	//ddwr("COMMAND=");
 	ddwrgetinput('ddcommandlist');
 }
 
@@ -659,6 +662,11 @@ Evrything comes here when a turn has passed.
 */
 function ddmaintimeloop()
 {
+	if( ddglobal['K1'] = -1 )
+	{
+		//A monster is dead
+		ddmonsterdead();
+	}
 
 	//At the end of the loop we ask the player what to do again
 	ddcommandlist_pre();
@@ -1688,7 +1696,15 @@ function ddgodmodemapedit(cliinput)
 	ddmaintimeloop();
 }
 
+/*
 
+*/
+function ddmonsterdead()
+{
+	ddglobal['K1'] = 0;
+	//ddglobal['C'][7] = ddglobal['C'][7] + ddglobal['K'][6];
+	ddmaintimeloop();
+}
 
 
 
@@ -1875,6 +1891,51 @@ function ddinitglobalmemory()
 	ddglobal['E4'][8] = 300;
 	ddglobal['E4'][9] = 200;
 	ddglobal['E4'][10] = 600;
+	//K1 is if a monster is active or dead
+	ddglobal['K1'] = 0;
+	//BS is monster name
+	//B is monster stats
+	ddglobal['BS'] = Array('skip0');
+	ddglobal['B'] = Array('skip0');
+	var monsterlist = Array
+	(
+		"MAN",1,13,26,1,1,500,
+		"GOBLIN",2,13,24,1,1,600,
+		"TROLL",3,15,35,1,1,1000,
+		"SKELETON",4,22,12,1,1,50,
+		"BALROG",5,18,110,1,1,5000,
+		"OCHRE JELLY",6,11,20,1,1,0,
+		"GREY OOZE",7,11,13,1,1,0,
+		"GNOME",8,13,30,1,1,100,
+		"KOBOLD",9,15,16,1,1,500,
+		"MUMMY",10,16,30,1,1,100
+	);
+	for(var M = 1; M <= 10; M++)
+	{
+		ddglobal['B'][M] = Array();
+		var j = (M * 7) - 7;
+
+		ddglobal['BS'][M] = monsterlist[j];
+		ddglobal['B'][M][1] = monsterlist[(j + 1)];
+		ddglobal['B'][M][2] = monsterlist[(j + 2)];
+		ddglobal['B'][M][3] = monsterlist[(j + 3)];
+		ddglobal['B'][M][4] = monsterlist[(j + 4)];
+		ddglobal['B'][M][5] = monsterlist[(j + 5)];
+		ddglobal['B'][M][6] = monsterlist[(j + 6)];
+		//original code rearranged array
+		ddglobal['B'][M][4] = ddglobal['B'][M][3];
+		ddglobal['B'][M][5] = ddglobal['B'][M][6];
+		ddglobal['B'][M][1] = 1;
+	}
+
+}
+
+function dddisplaymonster()
+{
+	for(var M = 1; M <= 10; M++)
+	{
+		ddwr(ddglobal['BS'][M] + ddglobal['B'][M][1]);
+	}
 }
 
 function dddungeondata1()
