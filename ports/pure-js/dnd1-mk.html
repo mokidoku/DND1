@@ -659,7 +659,9 @@ function ddseeversusreal(lookm, lookn)
 
 /*
 line 07000
-Evrything comes here when a turn has passed.
+Evrything comes here when a turn has passed. Hard to follow.
+Original code would sometimes just jump right back to here instead
+of going through normal flow.
 */
 function ddmaintimeloop()
 {
@@ -677,10 +679,15 @@ function ddmaintimeloop()
 
 	}
 
-	if( ddrandom(1, 20) > 10 )
-	{
-		//GOTO 07830
-		ddwanderingmonster();
+	//I think the original code would never get here
+	//if there was already a monster running around
+	if( ddglobal['K'] == 0 )
+	{ 
+		if( ddrandom(1, 20) > 10 )
+		{
+			//GOTO 07830
+			ddwanderingmonster();
+		}
 	}
 	//At the end of the loop we ask the player what to do again
 	ddcommandlist_pre();
@@ -1201,6 +1208,10 @@ function ddsearchforsecret()
 		if( foundflag == 0 )
 		{
 			ddwr("NO NOT THAT YOU CAN TELL");
+			ddmaintimeloop();
+		}
+		else
+		{
 			ddmaintimeloop();
 		}
 	}
@@ -1750,7 +1761,7 @@ function ddplayerhurtbad()
 }
 
 /*
-line
+line 07830
 */
 function ddwanderingmonster()
 {
@@ -1762,13 +1773,119 @@ function ddwanderingmonster()
 			if( (ddglobal['B'][M][5] >= 1 ) && ( ddrandom(1, 1000) > 925 ) )
 			{
 				ddwr("MONSTER PLACEMENT ROUTINE");
-				ddwr(ddglobal['BS'][M]);
 				//GOTO 08000
+				ddtryplacemonster(M);
+				ddwr(ddglobal['BS'][M]+" at ("+ddglobal['F1']+","+ddglobal['F2']+")");
 				return;
 			}
 		}
 	}
 }
+
+/*
+line 08000
+This is a doozy of loops.
+It is going to keep trying and trying to find a spot.
+Perhaps it would be better to rewrite this to give us the entire
+list of 0 of the dungeon in the grid and then just randomly pick
+one of those 0
+*/
+function ddtryplacemonster(monsternumber)
+{
+	ddglobal['K'] = monsternumber;
+	ddglobal['M1'] = ddrandom(1, 7) + 1;
+	var M1 = ddglobal['M1'];
+	for(var M = -M1; M <= M1; M++)
+	{
+		for(var N = -M1; N <= M1; N++)
+		{
+			//skip over locations within 2 squares of character
+			if( (Math.abs(M) > 2) && (Math.abs(N) > 2) )
+			{
+				if( ddcheckplacementbounds(M, N) == true )
+				{
+					if( ddrandom(1,10) > 7 )
+					{
+						var locg = ddglobal['G'] + M;
+						var loch = ddglobal['H'] + N;
+						if( ddglobal['DA'][locg][loch] == 0 )
+						{
+							dddropinthemonster(monsternumber, locg, loch);
+							//the original code actually goes back to 07000
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	//Hopefully we never get here but if we do then we try again
+	//We should put some code here to only try 100 times or such
+	ddtryplacemonster(monsternumber);
+}
+
+/*
+line 08030
+*/
+function ddcheckplacementbounds(M, N)
+{
+	var spotcheck = true;
+	if( (ddglobal['G'] + M) < 1 )
+	{
+		spotcheck = false;
+	}
+	if( (ddglobal['G'] + M) > 25 )
+	{
+		spotcheck = false;
+	}
+	if( (ddglobal['H'] + N) < 1 )
+	{
+		spotcheck = false;
+	}
+	if( (ddglobal['H'] + N) > 25 )
+	{
+		spotcheck = false;
+	}
+	return spotcheck;
+}
+
+/*
+line 08110
+*/
+function dddropinthemonster(monsternumber, locg, loch)
+{
+	ddglobal['DA'][locg][loch] = 5;
+	ddglobal['F1'] = locg;
+	ddglobal['F2'] = loch;
+}
+
+/*
+line 03050
+*/
+function ddranintomonster()
+{
+	ddwr("YOU RAN INTO THE MONSTER ");
+	ddwr("HE SHOVES YOU BACK");
+	ddwr("");
+	if( ddrandom(1, 2) == 2 )
+	{
+		ddwr("YOU LOOSE 6 HIT POINT ");
+		ddglobal['C'][0] = ddglobal['C'][0] - 6;
+	}
+	ddmaintimeloop();
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 utility functions
@@ -1987,7 +2104,10 @@ function ddinitglobalmemory()
 		ddglobal['B'][M][5] = ddglobal['B'][M][6];
 		ddglobal['B'][M][1] = 1;
 	}
-
+	//These are the coordinates on the dungeon of the monster
+	//See ddplacemonster()
+	ddglobal['F1'] = null;
+	ddglobal['F2'] = null;
 }
 
 function dddisplaymonster()
@@ -2013,10 +2133,10 @@ durow[6]  = "1,0,0,0,0,0,2,0,0,0,7,0,0,0,0,0,0,0,0,1,1,1,0,1,0,1";
 durow[7]  = "1,0,1,3,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1";
 durow[8]  = "1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1";
 durow[9]  = "1,0,1,0,1,0,0,1,0,0,1,4,1,1,1,0,1,0,0,0,0,0,4,0,0,1";
-durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,1,1";
-durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,2,1,0,0,1,0,1,0,0,0,1";
+durow[10] = "1,0,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,3,1";
+durow[11] = "1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,2,1,0,0,1,0,3,0,0,0,1";
 durow[12] = "1,0,1,0,1,0,1,1,1,2,1,0,1,4,1,0,1,1,1,1,4,1,0,6,6,1";
-durow[13] = "1,0,0,2,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,1,0,0,0,1";
+durow[13] = "1,0,0,2,3,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,3,0,0,0,1";
 durow[14] = "1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,1,1,1,3,1";
 durow[15] = "1,0,1,6,1,6,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1";
 durow[16] = "1,0,1,0,0,0,1,0,1,2,1,0,1,0,1,2,1,2,0,0,2,0,1,0,6,1";
@@ -2124,27 +2244,27 @@ durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
 durow[1]  = "1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,7,1,0,0,0,1";
 durow[2]  = "1,0,0,0,0,0,3,0,0,0,0,0,3,0,0,0,0,0,0,1,1,1,0,0,0,1";
 durow[3]  = "1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,6,0,0,0,0,1";
-durow[4]  = "1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,0,0,0,1";
-durow[5]  = "1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,1";
-durow[6]  = "1,0,0,0,0,0,1,0,1,0,0,0,1,1,1,1,1,0,0,0,0,1,2,0,0,1";
+durow[4]  = "1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,4,1,3,1,1,1,1,0,0,0,1";
+durow[5]  = "1,0,0,0,0,0,1,0,1,0,0,0,0,0,4,0,4,0,0,0,0,1,0,0,0,1";
+durow[6]  = "1,0,0,0,0,0,1,0,1,0,0,0,1,1,1,4,1,0,0,0,0,1,2,0,0,1";
 durow[7]  = "1,1,1,3,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,1";
 durow[8]  = "1,0,0,0,1,0,0,0,1,0,0,0,1,1,1,0,1,1,1,1,3,1,0,0,0,1";
-durow[9]  = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,1,1,1,1";
+durow[9]  = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,4,1,3,1";
 durow[10] = "1,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1";
 durow[11] = "1,0,0,0,1,0,0,0,1,1,1,1,1,1,1,0,1,0,0,1,0,1,0,1,0,1";
 durow[12] = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,1";
 durow[13] = "1,0,0,7,1,6,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1";
-durow[14] = "1,1,1,1,1,1,3,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,1,1,0,1";
-durow[15] = "1,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,1,1,1,0,1";
-durow[16] = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,2,1,1,1,0,1";
-durow[17] = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,3,1,0,0,1,0,1,1,1,0,1";
-durow[18] = "1,2,0,0,3,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,1,1,0,1";
+durow[14] = "1,1,1,1,1,1,3,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1";
+durow[15] = "1,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1";
+durow[16] = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,2,1,0,1,0,1";
+durow[17] = "1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,3,1,0,0,1,0,1,0,1,0,1";
+durow[18] = "1,2,0,0,3,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1";
 durow[19] = "1,3,1,1,1,1,1,0,1,0,0,0,0,0,1,1,1,1,1,1,0,1,0,1,0,1";
-durow[20] = "1,0,0,0,1,6,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1";
-durow[21] = "1,0,0,0,1,3,1,3,1,1,1,0,0,0,1,1,1,1,4,1,1,1,4,1,3,1";
+durow[20] = "1,0,0,0,4,6,4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1";
+durow[21] = "1,0,0,0,1,3,1,4,1,1,1,0,0,0,1,1,1,1,4,1,1,1,4,1,3,1";
 durow[22] = "1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1,2,0,0,0,0,0,0,0,1";
-durow[23] = "1,0,0,0,1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1";
-durow[24] = "1,0,0,0,3,6,0,0,0,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[23] = "1,0,0,0,1,0,0,0,0,0,1,1,1,1,1,3,1,0,0,0,0,0,0,0,0,1";
+durow[24] = "1,0,0,0,3,6,0,0,0,0,1,0,0,4,0,0,4,0,0,0,0,0,0,0,0,1";
 durow[25] = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
 	for(var M = 0; M <= 25; M++)
 	{
