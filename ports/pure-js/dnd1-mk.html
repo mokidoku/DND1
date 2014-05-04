@@ -74,6 +74,9 @@ function ddoldnewgame(cliinput)
 	}
 }
 
+/*
+line
+*/
 function dddungeonnumber(cliinput)
 {
 	cliinput = parseInt(cliinput);
@@ -92,6 +95,8 @@ function dddungeonnumber(cliinput)
 
 /*
 line 00422
+This pertains to whether the dungeon should continously reset
+monsters, over and over again so there is never an end.
 */
 function ddcontinuereset(cliinput)
 {
@@ -695,6 +700,7 @@ function ddmaintimeloop()
 		//GOTO 07160
 		//07160 GOSUB 08410
 		ddrangeandhitcheck();
+		dddebug("R1="+ddglobal['R1']);
 		if( ddglobal['B'][ddglobal['K']][3] < 1 )
 		{
 			//GOTO 08290
@@ -708,6 +714,18 @@ function ddmaintimeloop()
 			ddmonsterisclose();
 		}
 	}
+	//I dont see how the monster could have died in the above
+	if( ddglobal['K'] > 0 )
+	{
+		ddmovemonstercloser();
+	}
+	//Might as well update monster range before we get to character action
+	if( ddglobal['K'] > 0)
+	{
+		ddrangeandhitcheck();
+	}
+
+
 	if( (ddglobal['G'] == 1 ) && (ddglobal['H'] == 12) )
 	{
 		//TODO Change this into a tile number?
@@ -1765,8 +1783,19 @@ line 08290
 function ddmonsterdead()
 {
 	ddglobal['K1'] = 0;
-	//ddglobal['C'][7] = ddglobal['C'][7] + ddglobal['K'][6];
-	ddmaintimeloop();
+	//give character the monsters gold
+	ddglobal['C'][7] = ddglobal['C'][7] + ddglobal['B'][ddglobal['K']][6];
+	ddwr("GOOD WORK YOU JUST KILLED A "+ddglobal['BS'][ddglobal['K']]);
+	ddwr("AND GET "+ddglobal['B'][ddglobal['K']][6]+" GOLD PIECES");
+	//clean up monster variables
+	ddglobal['DA'][ddglobal['F1']][ddglobal['F2']] = 0;
+	ddglobal['F1'] = 0;
+	ddglobal['F2'] = 0;
+	//TODO implement code concering whether to reset monsters or not
+	//ddmaintimeloop();
+	//instead of sending it back to ddmaintimeloop we use global
+	//code should know what to do if K is 0
+	ddglobal['K'] = 0;
 }
 
 /*
@@ -2089,6 +2118,157 @@ function ddmonsterisclose()
 	}
 }
 
+/*
+line 07210
+*/
+function ddmovemonstercloser()
+{
+	//R8 and R9 are set in the ddsetmonsterrange
+	//which should have run by now
+	//note that they are the distance from the character
+	//not the DA dungeon coordinates
+	var absr8 = Math.abs(ddglobal['R8']);
+	var absr9 = Math.abs(ddglobal['R9']);
+	if(absr8 > absr9)
+	{
+		//GOTO 07260
+		ddglobal['F5'] = -(ddglobal['R8'] / absr8);
+		ddglobal['F6'] = 0;
+	}
+	else
+	{
+		ddglobal['F5'] = 0;
+		ddglobal['F6'] = -(ddglobal['R9'] / absr9);
+	}
+	//loop through all the dungeon tile types
+	for(var Q = 0; Q <= 8 ; Q++)
+	{
+		if( (Q != 1) && (Q != 5) )
+		{
+			var xcoordinate = ddglobal['F1'] + ddglobal['F5'];
+			var ycoordinate = ddglobal['F2'] + ddglobal['F6'];
+			if( !ddcheckdungeonbounds(xcoordinate, ycoordinate) )
+			{
+				if( ddglobal['DA'][xcoordinate][ycoordinate] == Q )
+				{
+					dddebug("ddtrymonstermovenewtile");
+					ddtrymonstermovenewtile(Q);
+				}
+			}
+		}
+
+	}
+}
+
+/*
+line 07300
+*/
+function ddcheckdungeonbounds(xcoordinate, ycoordinate)
+{
+	var outboundflag = false;
+	if( xcoordinate < 0)
+	{
+		outboundflag = true;
+	}
+	if( xcoordinate > 25)
+	{
+		outboundflag = true;
+	}
+	if( ycoordinate < 0)
+	{
+		outboundflag = true;
+	}
+	if( ycoordinate > 25)
+	{
+		outboundflag = true;
+	}
+}
+
+/*
+line 07340
+*/
+function ddtrymonstermovenewtile(dungeontiletype)
+{
+  dddebug("dungeontiletype="+dungeontiletype);
+	if( dungeontiletype == 0 )
+	{
+		ddmonstermovesimple();
+	}
+	else if( dungeontiletype == 2 )
+	{
+		ddmonstermovetrap();
+	}
+	else if( (dungeontiletype == 3) || (dungeontiletype == 4) )
+	{
+		ddmonstermovedoor();
+	}
+	else if( (dungeontiletype == 6) || (dungeontiletype == 7) || (dungeontiletype == 8) )
+	{
+		ddmonstermovesimple();
+	}
+	else
+	{
+
+	}
+	//the original code would update monster range
+}
+
+/*
+line 07430
+*/
+function ddmonstermovesimple()
+{
+  dddebug("ddmonstermovesimple");
+	//change old space to empty space
+	ddglobal['DA'][ddglobal['F1']][ddglobal['F2']] = 0;
+	ddglobal['F1'] = ddglobal['F1'] + ddglobal['F5'];
+	ddglobal['F2'] = ddglobal['F2'] + ddglobal['F6'];
+	//change new space to monster space
+	ddglobal['DA'][ddglobal['F1']][ddglobal['F2']] = 5;
+}
+
+/*
+line 07530
+*/
+function ddmonstermovetrap()
+{
+	ddwr("GOOD WORK  YOU LED HIM INTO A TRAP");
+	ddglobal['K1'] = -1;
+	ddglobal['B'][ddglobal['K']][6] = 0;
+	//original code GOTO 07000
+	//okay, 07000 would have checked for K1 and said monster died
+	//just do that here instead
+	ddmonsterdied();
+}
+
+/*
+line 07380
+Tricky because you dont want the monster to end up on the door
+*/
+function ddmonstermovedoor()
+{
+	var xcoordinate = ddglobal['F1'] + (ddglobal['F5'] * 2);
+	var ycoordinate = ddglobal['F2'] + (ddglobal['F6'] * 2);
+	if( ddglobal['DA'][xcoordinate][ycoordinate] == 0 )
+	{
+		ddglobal['F5'] = ddglobal['F5'] * 2;
+		ddglobal['F6'] = ddglobal['F6'] * 2;
+		//monster distance to move is set to 2 spaces
+		//send them to movesimple
+		ddmonstermovesimple();
+	}
+	//The original code would GOTO 07510 if no empty space was found
+	//just returning to normal code flow instead
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2110,6 +2290,12 @@ function ddwr(txtscalar)
 {
 	consoleobj.innerHTML = consoleobj.innerHTML + txtscalar + "\n";
 	consoleobj.scrollTop = consoleobj.scrollHeight;
+}
+
+function dddebug(txtscalar)
+{
+	//uncomment for debug statements
+	//ddwr(txtscalar);
 }
 
 function ddwrgetinput(passfunctionname)
@@ -2323,6 +2509,11 @@ function ddinitglobalmemory()
 	//See ddplacemonster()
 	ddglobal['F1'] = null;
 	ddglobal['F2'] = null;
+	//J6 is a flag that controls whether to continously reuse monsters
+	ddglobal['J6'] = 0;
+	//R8 and R9 are the location coordinates of any spawned monster
+	ddglobal['R8'] = null;
+	ddglobal['R9'] = null;
 }
 
 function dddisplaymonster()
