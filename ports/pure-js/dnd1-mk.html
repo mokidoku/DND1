@@ -484,6 +484,8 @@ function ddcommandlist_pre()
 
 /*
 line 01600
+Consequently, all functions should return back to nothing as code flow
+is determined more by the last function call at the end of the chain.
 */
 function ddcommandlist(cliinput)
 {
@@ -1344,8 +1346,185 @@ function ddfightback()
 		ddwr("YOU ATTACK THE DARKNESS");
 		ddcommandlist_pre();
 	}
+	else
+	{
+		ddwr("MONSTER IS "+ddglobal['BS'][ddglobal['K']]);
+		ddwr("HP="+ddglobal['B'][ddglobal['K']][3]);
+		dddetermineweapon();
+	}
 
 }
+
+/*
+line 03800
+a lot of characteristics of weapons is determined through code
+*/
+function dddetermineweapon()
+{
+	if( ddglobal['J'] == 0 )
+	{
+		//GOTO 04460
+		ddbarehandedattack_pre();
+	}
+	else if( ddglobal['J'] == 1 )
+	{
+		//GOTO 04680
+		ddswordattack();
+	}
+	else if( ddglobal['J'] == 2 )
+	{
+		//GOTO 04860
+		ddtwohandattack();
+	}
+	else if( ddglobal['J'] == 3 )
+	{
+		//GOTO 05040
+		dddaggerattack();
+	}
+	else if( ddglobal['J'] == 4 )
+	{
+		//GOTO 05270
+		ddmaceattack();
+	}
+	else if( (ddglobal['J'] > 4) && (ddglobal['J'] < 15) )
+	{
+		//GOTO 03870
+		//ranged?
+	}
+	else if( ddglobal['J'] == 16 )
+	{
+		//THORS HAMMER!
+	}
+}
+
+/*
+line 04460
+*/
+function ddbarehandedattack_pre()
+{
+	ddwr("DO YOU REALIZE YOU ARE BARE HANDED");
+	ddwr("DO YOU WANT TO MAKE ANOTHER CHOICE");
+	ddwrgetinput('ddbarehandedattack');
+}
+
+/*
+line 04490
+*/
+function ddbarehandedattack(cliinput)
+{
+	ddglobal['QS'] = cliinput;
+	if( (cliinput == 'Y') || (cliinput == 'YES') )
+	{
+		//give the player a free turn
+		ddcommandlist_pre();
+	}
+	else
+	{
+		ddwr("O.K. PUNCH BITE SCRATCH HIT ........");
+		//I dont know why the code searches 1 square around the character
+		//here as it seems we could just use the R1 variable
+		if( ddglobal['R1'] <= 1 )
+		{
+			if( ddrandom(1, 20) > ddglobal['B'][ddglobal['K']][2])
+			{
+				ddwr("GOOD A HIT");
+				//ddcommandlist_pre();
+				//The original code let the player get a free action
+				//if they hit the monster
+				ddmaintimeloop();
+			}
+			else
+			{
+				ddwr("TERRIBLE NO GOOD");
+				ddmaintimeloop();
+			}
+		}
+		else
+		{
+			ddwr("NO GOOD ONE");
+			ddmaintimeloop();
+		}
+	}
+}
+
+/*
+line 04680
+*/
+function ddswordattack()
+{
+	ddwr("SWING");
+	//Original code checks range
+	if( ddglobal['R1'] < 2 )
+	{
+		if( ddglobal['R2'] == 0 )
+		{
+			ddwr("MISSED TOTALY");
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 1 )
+		{
+			ddwr("NOT GOOD ENOUGH");
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 2 )
+		{
+			ddwr("GOOD HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt(ddglobal['C'][1] / 2);
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 3 )
+		{
+			ddwr("CRITICAL HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt( ddglobal['C'][1] * (4/5) );
+			ddmaintimeloop();
+		}
+	}
+	else
+	{
+		ddwr("HE IS OUT OF RANGE");
+		ddmaintimeloop();
+	}
+}
+
+/*
+
+*/
+function dddeterminedamage()
+{
+	if(ddglobal['J'] == 16)
+	{
+		//GOTO 04680
+		ddwr("SWING");
+	}
+	//the original code did a ddrangeandhitcheck here
+	//this is already done in the ddmaintimeloop
+	//do we need to do it again?
+	if( ddglobal['R2'] == 0 )
+	{
+		//GOTO 04840
+	}
+	else if( ddglobal['R2'] == 1 )
+	{
+		//GOTO 04820
+	}
+	else if( ddglobal['R2'] == 2 )
+	{
+		//GOTO 04790
+	}
+	else if( ddglobal['R2'] == 3 )
+	{
+		//GOTO 04760
+	}
+}
+
+
+
+
+
+
+
+
+
 
 /*
 line 06610
@@ -1839,7 +2018,7 @@ function ddwanderingmonster()
 		{
 			if( (ddglobal['B'][M][5] >= 1 ) && ( ddrandom(1, 1000) > 925 ) )
 			{
-				ddwr("MONSTER PLACEMENT ROUTINE");
+				dddebug("MONSTER PLACEMENT ROUTINE");
 				//GOTO 08000
 				ddtryplacemonster(M);
 				ddwr(ddglobal['BS'][M]+" at ("+ddglobal['F1']+","+ddglobal['F2']+")");
@@ -2370,7 +2549,9 @@ function ddinitglobalmemory()
 	ddglobal['CS'][6] = "INT";
 	ddglobal['CS'][7] = "GOLD";
 
-	ddglobal['IS'] = Array('skip0');
+	//ddglobal['IS'] = Array('skip0');
+	//making element 0 say BARE HANDS
+	ddglobal['IS'] = Array('BARE HANDS');
 	ddglobal['P'] = Array('skip0');
 
 	var itemlist = Array
