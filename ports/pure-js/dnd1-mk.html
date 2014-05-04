@@ -17,6 +17,7 @@ function ddinit()
 	consoleobj.style.lineHeight='90%';
 	consoleobj.disabled = true;
 	commandobj = document.getElementById('command');
+	commandobj.style.lineHeight='90%';
 	passthru = '';
 	ddinitglobalmemory();
 	ddintro();
@@ -454,6 +455,14 @@ function ddyeastart()
 
 /*
 line 01590
+The path flow of functions can be confusing.
+My plan here is that ddcommandlist_pre is one major flow point.
+All function calls that start with issuing a command here, even though
+they often chain to other function calls, in the end, at the end of the
+chain they should either call ddcommandlist_pre or ddmaintimeloop.
+Which function to call at the end depends on whether we feel that the
+character has spent a round doing something or if they should get a
+free do over command.
 */
 function ddcommandlist_pre()
 {
@@ -662,29 +671,49 @@ line 07000
 Evrything comes here when a turn has passed. Hard to follow.
 Original code would sometimes just jump right back to here instead
 of going through normal flow.
+I am going to try and have each function just flow without having
+a final function call that jumps to somewhere else. Except for in
+this function, at the end, it calls the ddcommandlist_pre to get
+input from the player to find out what they want to do.
 */
 function ddmaintimeloop()
 {
+	//check to see if monster died from attacks
 	if( ddglobal['K1'] == -1 )
 	{
 		//A monster is dead
 		ddmonsterdead();
 	}
+	//check to see if character is hurt or dead
 	if( ddglobal['C'][0] < 2 )
 	{
 		ddplayerhurtbad();
 	}
+	//if we still have a monster check for attacks
 	if( ddglobal['K'] > 0 )
 	{
 		//GOTO 07160
 		//07160 GOSUB 08410
 		ddrangeandhitcheck();
+		if( ddglobal['B'][ddglobal['K']][3] < 1 )
+		{
+			//GOTO 08290
+			ddmonsterdead();
+			//That should send it back ddmaintimeloop
+			//Need to think more on the consequences of that program flow
+		}
+		else if( ddglobal['R1'] < 2.0 )
+		{
+			//GOTO 07600
+			ddmonsterisclose();
+		}
 	}
 	if( (ddglobal['G'] == 1 ) && (ddglobal['H'] == 12) )
 	{
 		//TODO Change this into a tile number?
 		//so the equipment shop can be placed anywhere
-		ddequipmentshoptile_pre();
+		//I also feel this does not fit the other functions in flow
+		//ddequipmentshoptile_pre();
 	}
 
 	//I think the original code would never get here
@@ -1993,7 +2022,72 @@ function ddrangetypecheckset()
 	}
 }
 
-
+/*
+line 07600
+*/
+function ddmonsterisclose()
+{
+	ddwr(ddglobal['BS'][ddglobal['K']]+" WATCH IT");
+	var armorfound = 6;
+	for(var M = 1; M <= ddglobal['X']; M++)
+	{
+		if( ddglobal['W'][M] == 10 )
+		{
+			//character has plate mail
+			//GOTO 07720
+			//ddglobal['A1'] = 20 + ddglobal['C'][2];
+			if(armorfound < 20)
+			{
+				armorfound = 20;
+			}
+		}
+		else if( ddglobal['W'][M] == 9 )
+		{
+			//GOTO 07700
+			//ddglobal['A1'] = 16 + ddglobal['C'][2];
+			if(armorfound < 16)
+			{
+				armorfound = 16;
+			}
+		}
+		else if( ddglobal['W'][M] == 8 )
+		{
+			//GOTO 07680
+			//ddglobal['A1'] = 12 + ddglobal['C'][2];
+			if(armorfound < 12)
+			{
+				armorfound = 12;
+			}
+		}
+		else
+		{
+			//ddglobal['A1'] = 6 + ddglobal['C'][2];
+		}
+	}
+	ddglobal['A1'] = armorfound + ddglobal['C'][2];
+	if( ddrandom(1, 40) > ddglobal['A1'] )
+	{
+		//GOTO 07790
+		ddwr("MONSTER SCORES A HIT");
+		var maxdamage = ddglobal['B'][ddglobal['K']][2];
+		ddglobal['C'][0] = ddglobal['C'][0] - ddrandom(1, maxdamage);
+		ddwr("H.P.="+ddglobal['C'][0]);
+		//GOTO 07000
+		//Wont this allow the monster to go again?
+	}
+	else if( ddrandom(1, 2) > 1 )
+	{
+		ddwr("HE HIT YOU BUT NOT GOOD ENOUGH");
+		//GOTO 07000
+		//Wont this allow the monster to go again?
+	}
+	else
+	{
+		ddwr("HE MISSED");
+		//GOTO 01590
+		//So if the monster misses the player gets to go
+	}
+}
 
 
 
