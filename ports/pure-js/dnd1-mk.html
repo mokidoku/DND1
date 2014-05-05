@@ -476,12 +476,14 @@ function ddcommandlist_pre()
 	//ddwr("COMMANDS LIST");
 	//kabalyero wanted auto looking
 	ddautolookaround();
+	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
+	//ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
+	//ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
+	//ddwr("6=LOOK AROUND  7=SAVE GAME  8=USE MAGIC  9=BUY MAGIC");
+	//ddwr("0=PASS  11=BUY H.P.");
 	ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
-	ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
-	ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
-	ddwr("6=LOOK AROUND  7=SAVE GAME  8=USE MAGIC  9=BUY MAGIC");
-	ddwr("0=PASS  11=BUY H.P.");
-	//ddwr("COMMAND=");
+	ddwr("1=MOVE 2=OPEN DOOR 3=SEARCH 4=EQUIP WEAPON 5=FIGHT 6=LOOK");
+	ddwr("7=SAVE 8=USE MAGIC 9=BUY MAGIC 0=PASS 11=BUY H.P.");
 	ddwrgetinput('ddcommandlist');
 }
 
