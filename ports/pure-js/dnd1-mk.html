@@ -4,7 +4,7 @@
 <script>
 function ddinit()
 {
-	document.write('<textarea id="console" cols="80" rows="17">');
+	document.write('<textarea id="console" cols="80" rows="25">');
 	document.write('</textarea>');
 	//document.write('<pre id="console">');
 	//document.write('</pre>');
@@ -2836,8 +2836,13 @@ function ddinitglobalmemory()
 	ddglobal['K1'] = 0;
 	//BS is monster name
 	//B is monster stats
+	//B[1] is does monster exist
+	//B[2] is maximum damage
+	//B[3] is hit points
+	//B[5] is gold
 	ddglobal['BS'] = Array('skip0');
 	ddglobal['B'] = Array('skip0');
+	//These are the original monster values
 	var monsterlist = Array
 	(
 		"MAN",1,13,26,1,1,500,
@@ -2850,6 +2855,20 @@ function ddinitglobalmemory()
 		"GNOME",8,13,30,1,1,100,
 		"KOBOLD",9,15,16,1,1,500,
 		"MUMMY",10,16,30,1,1,100
+	);
+	//These are easier monsters to fight
+	var monsterlist = Array
+	(
+		"MAN",         1,10,16,1,1,500,
+		"GOBLIN",      2, 8,18,1,1,600,
+		"TROLL",       3,14,24,1,1,1000,
+		"SKELETON",    4, 8,12,1,1,50,
+		"BALROG",      5,18,42,1,1,5000,
+		"OCHRE JELLY", 6,10,20,1,1,0,
+		"GREY OOZE",   7, 8,13,1,1,0,
+		"GNOME",       8, 6,10,1,1,500,
+		"KOBOLD",      9, 8,12,1,1,200,
+		"MUMMY",      10,16,30,1,1,100
 	);
 	for(var M = 1; M <= 10; M++)
 	{
@@ -2914,9 +2933,9 @@ durow[18] = "1,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,1,1,0,0,1,1,1,4,1";
 durow[19] = "1,0,0,0,6,0,3,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1";
 durow[20] = "1,0,0,0,0,0,1,0,0,0,0,0,0,6,0,0,0,3,0,0,0,7,0,0,0,1";
 durow[21] = "1,0,1,4,1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,1,0,0,0,0,0,1";
-durow[22] = "1,0,1,0,1,0,0,1,0,0,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,1";
-durow[23] = "1,0,1,1,1,2,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
-durow[24] = "1,0,4,6,1,6,0,1,0,0,4,0,3,0,1,0,1,0,0,1,0,0,0,0,0,1";
+durow[22] = "1,0,1,0,1,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1";
+durow[23] = "1,0,1,1,1,2,0,0,0,0,0,0,1,0,1,0,1,0,1,1,0,0,0,0,0,1";
+durow[24] = "1,0,4,6,1,6,0,1,0,0,0,0,4,0,1,0,1,0,0,1,0,0,0,0,0,1";
 durow[25] = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
 	for(var M = 0; M <= 25; M++)
 	{
