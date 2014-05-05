@@ -473,6 +473,8 @@ function ddcommandlist_pre()
 {
 	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")");
 	//ddwr("COMMANDS LIST");
+	//kabalyero wanted auto looking
+	ddautolookaround();
 	ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
 	ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
 	ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
@@ -617,7 +619,49 @@ function ddlookaround()
 		}
 		ddwr(linestring);
 	}
-	ddmaintimeloop();
+	//Original code would burn a turn
+	//ddmaintimeloop();
+	ddcommandlist_pre();
+}
+
+function ddautolookaround()
+{
+	//REM LOOKING
+	for(var M = -5; M <= 5; M++)
+	{
+		var linestring = '';
+		for(var N = -5; N <= 5; N++)
+		{
+			if( (ddglobal['G'] + M) > 25 )
+			{
+
+			}
+			else if( (ddglobal['G'] + M) < 0 )
+			{
+
+			}
+			else if( (ddglobal['H'] + N) > 25 )
+			{
+
+			}
+			else if( (ddglobal['H'] + N) < 0 )
+			{
+
+			}
+			else if( (M == 0) && (N == 0) )
+			{
+				linestring = linestring+'9';
+			}
+			else
+			{
+				linestring = linestring+''+ddseeversusreal(M, N);
+			}
+		}
+		ddwr(linestring);
+	}
+	//Original code would burn a turn
+	//ddmaintimeloop();
+	//ddcommandlist_pre();
 }
 
 /*
