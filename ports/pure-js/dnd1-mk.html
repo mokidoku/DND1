@@ -27,7 +27,7 @@ function ddintro()
 {
 	ddwr("     RICHARD GARRIOTT DND1");
 	ddwr("");
-	ddwr("DO YOU NEED INSTRUCTION (Y)ES OR (N)O");
+	ddwr("DO YOU NEED INSTRUCTION (Y)ES (N)O");
 	ddwrgetinput('ddinstruction');
 }
 
@@ -342,7 +342,7 @@ line 01000
 function ddgoldcount_pre()
 {
 	ddwr("GP= "+ddglobal['C'][7]);
-	ddwr("EQ LIST (Y)ES OR (N)O");
+	ddwr("EQ LIST (Y)ES (N)O");
 	ddwrgetinput('ddequipmentlist');
 }
 
@@ -1403,7 +1403,8 @@ line 04460
 function ddbarehandedattack_pre()
 {
 	ddwr("DO YOU REALIZE YOU ARE BARE HANDED");
-	ddwr("DO YOU WANT TO MAKE ANOTHER CHOICE");
+	//ddwr("DO YOU WANT TO MAKE ANOTHER CHOICE");
+	ddwr("DO YOU WANT TO MAKE ANOTHER CHOICE (Y)ES (N)O");
 	ddwrgetinput('ddbarehandedattack');
 }
 
@@ -1453,7 +1454,7 @@ line 04680
 function ddswordattack()
 {
 	ddwr("SWING");
-	//Original code checks range
+	ddrangeandhitcheck();
 	if( ddglobal['R1'] < 2 )
 	{
 		if( ddglobal['R2'] == 0 )
@@ -1469,7 +1470,7 @@ function ddswordattack()
 		else if( ddglobal['R2'] == 2 )
 		{
 			ddwr("GOOD HIT");
-			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt(ddglobal['C'][1] / 2);
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt(ddglobal['C'][1] * (1/2) );
 			ddmaintimeloop();
 		}
 		else if( ddglobal['R2'] == 3 )
@@ -1487,36 +1488,109 @@ function ddswordattack()
 }
 
 /*
-
+line 04860
 */
-function dddeterminedamage()
+function ddtwohandattack()
 {
-	if(ddglobal['J'] == 16)
+	ddwr("SWHNG");
+	ddrangeandhitcheck();
+	if( ddglobal['R1'] < 2.1 )
 	{
-		//GOTO 04680
-		ddwr("SWING");
+		//GOTO 04910
+		if( ddglobal['R2'] == 0 )
+		{
+			ddwr("MISSED TOTALY");
+			//ddcommandlist_pre();
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 1 )
+		{
+			ddwr("HIT BUT ? WELL ENOUGH");
+			//ddcommandlist_pre();
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 2 )
+		{
+			ddwr("HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt( ddglobal['C'][1] * (5/7) );
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 3 )
+		{
+			ddwr("CRITICAL HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt( ddglobal['C'][1] * (1) );
+			ddmaintimeloop();
+		}
 	}
-	//the original code did a ddrangeandhitcheck here
-	//this is already done in the ddmaintimeloop
-	//do we need to do it again?
-	if( ddglobal['R2'] == 0 )
+	else
 	{
-		//GOTO 04840
-	}
-	else if( ddglobal['R2'] == 1 )
-	{
-		//GOTO 04820
-	}
-	else if( ddglobal['R2'] == 2 )
-	{
-		//GOTO 04790
-	}
-	else if( ddglobal['R2'] == 3 )
-	{
-		//GOTO 04760
+		ddwr("HE IS OUT OF RANGE");
+		ddmaintimeloop();
 	}
 }
 
+/*
+line 05040
+*/
+function dddaggerattack()
+{
+	ddrangeandhitcheck();
+	if( ddglobal['R1'] > 5 )
+	{
+		//GOTO 04710
+		ddwr("HE IS OUT OF RANGE");
+		ddmaintimeloop();
+	}
+	else if( ddglobal['R1'] > 1 )
+	{
+		for(var M = 1; M <= ddglobal['X']; M++)
+		{
+			if( ddglobal['W'][M] == 3 )
+			{
+				ddglobal['W'][M] = 0;
+				//this should break the loop and stop searching
+				M = ddglobal['X'] + 1;
+			}
+		}
+		ddglobal['J'] = 0;
+		ddwr("YOU ARE NOW EMPTY HANDED");
+		ddwr("YOU THROW YOUR DAGGER");
+		dddaggerattackchances();
+	}
+	else if( ddglobal['R1'] <= 1 )
+	{
+		ddwr("SLASH");
+		dddaggerattackchances();
+	}
+}
+
+function dddaggerattackchances()
+{
+		if( ddglobal['R2'] == 0 )
+		{
+			ddwr("MISSED TOTALY");
+			//ddcommandlist_pre();
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 1 )
+		{
+			ddwr("HIT BUT NO DAMAGE");
+			//ddcommandlist_pre();
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 2 )
+		{
+			ddwr("HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt( ddglobal['C'][1] * (1/4) );
+			ddmaintimeloop();
+		}
+		else if( ddglobal['R2'] == 3 )
+		{
+			ddwr("CRITICAL HIT");
+			ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - parseInt( ddglobal['C'][1] * (3/10) );
+			ddmaintimeloop();
+		}
+}
 
 
 
@@ -2198,7 +2272,9 @@ function ddsetmonsterrange(monm, monn)
 }
 
 /*
-line 0820
+line 08420
+R1 is distance between character and monster
+R2 is the degree of hit, miss, good, critical
 setting R2 to 1, 2, or 3
 */
 function ddrangetypecheckset()
