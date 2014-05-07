@@ -4,13 +4,15 @@
 <script>
 function ddinit()
 {
-	document.write('<textarea id="console" cols="80" rows="25">');
+	document.write('<textarea id="console" cols="70" rows="14">');
 	document.write('</textarea>');
 	//document.write('<pre id="console">');
 	//document.write('</pre>');
 	document.write('<br>');
 	document.write('<input id="command" name="command" type="text" size="80" onkeydown="Javascript: if (event.keyCode==13) ddcliinterpreter(this)">');
 	document.write("\n");
+	document.write('<pre id="mappad">');
+	document.write('</pre>');
 	consoleobj = document.getElementById('console');
 	//consoleobj.style.font="bold 12px courier,monospace";
 	//consoleobj.style.backgroundColor='#000000';
@@ -20,10 +22,25 @@ function ddinit()
 	commandobj = document.getElementById('command');
 	commandobj.style.lineHeight='90%';
 	passthru = '';
+	mappadobj = document.getElementById('mappad');
+	mappadobj.style.lineHeight='70%';
+	mappadobj.style.backgroundColor='#000000';
+	mappadobj.style.color='#FFFFFF';
+	mappadobj.style.width='92px';
 	ddinitglobalmemory();
 	ddintro();
 }
 
+/*
+Some notes on general code flow. After ddintro is done chaining
+through the introduction functions, the code is done for that
+operation. There is not a while loop. The commandobj is what
+initiates the next chain of functions. Then that chain will come
+to an end. The commandobj will then be left to initiate the next
+chain of functions. Which functions get invoked depend on what
+the passthru variable has been set to and also by what the player
+has entered in the commandobj as cliinput.
+*/
 function ddintro()
 {
 	ddwr("     RICHARD GARRIOTT DND1");
@@ -629,6 +646,7 @@ function ddlookaround()
 
 function ddautolookaround()
 {
+	var mapstring = '';
 	//REM LOOKING
 	for(var M = -5; M <= 5; M++)
 	{
@@ -660,8 +678,10 @@ function ddautolookaround()
 				linestring = linestring+''+ddseeversusreal(M, N);
 			}
 		}
-		ddwr(linestring);
+		//ddwr(linestring);
+		mapstring = mapstring+linestring+"\n";
 	}
+	ddupdatemappad(mapstring);
 	//Original code would burn a turn
 	//ddmaintimeloop();
 	//ddcommandlist_pre();
@@ -1710,7 +1730,7 @@ line 03880
 function ddfoodattack_pre()
 {
 	ddwr("FOOD ???.... WELL O.K.");
-	ddwr("IS IT TO HIT OR DISTRACT");
+	ddwr("IS IT TO (H)IT OR (D)ISTRACT");
 	ddwrgetinput('ddfoodattack');
 }
 
@@ -1742,6 +1762,17 @@ I changed this to just use the generic ddrangeandhitcheck.
 */
 function ddfoodhitattack()
 {
+	for(var M = 1; M <= ddglobal['X']; M++)
+	{
+		if( ddglobal['W'][M] == 15 )
+		{
+			ddglobal['W'][M] = 0;
+			//this should break the loop and stop searching
+			M = ddglobal['X'] + 1;
+		}
+	}
+	ddglobal['J'] = 0;
+	ddwr("YOU ARE NOW EMPTY HANDED");
 	ddwr("PALLOOOOINK");
 	ddrangeandhitcheck();
 	if( ddglobal['R1'] < 10 )
@@ -2760,6 +2791,11 @@ function ddwrgetinput(passfunctionname)
 		commandobj.value = '';
 	}
 	commandobj.focus();
+}
+
+function ddupdatemappad(mapstring)
+{
+	mappadobj.innerHTML = mapstring;
 }
 
 function ddcliinterpreter(inputobj)
