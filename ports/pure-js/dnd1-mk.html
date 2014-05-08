@@ -13,6 +13,7 @@ function ddinit()
 	document.write("\n");
 	document.write('<pre id="mappad">');
 	document.write('</pre>');
+	document.write("\n");
 	consoleobj = document.getElementById('console');
 	//consoleobj.style.font="bold 12px courier,monospace";
 	//consoleobj.style.backgroundColor='#000000';
@@ -26,7 +27,11 @@ function ddinit()
 	mappadobj.style.lineHeight='70%';
 	mappadobj.style.backgroundColor='#000000';
 	mappadobj.style.color='#FFFFFF';
-	mappadobj.style.width='92px';
+	//mappadobj.style.width='92px';
+	mappadobj.style.display='table-cell';
+	mappadobj.style.fontSize='x-large';
+	//mappadobj.style.fontStretch='ultra-expanded';
+	//mappadobj.style.letterSpacing='1px';
 	ddinitglobalmemory();
 	ddintro();
 }
@@ -2968,7 +2973,7 @@ function ddinitglobalmemory()
 	//BS is monster name
 	//B is monster stats
 	//B[1] is does monster exist
-	//B[2] is armor class
+	//B[2] is armor class and max damage
 	//B[3] is hit points
 	//B[5] is gold
 	ddglobal['BS'] = Array('skip0');
@@ -2976,16 +2981,16 @@ function ddinitglobalmemory()
 	//These are the original monster values
 	var monsterlist = Array
 	(
-		"MAN",1,13,26,1,1,500,
-		"GOBLIN",2,13,24,1,1,600,
-		"TROLL",3,15,35,1,1,1000,
-		"SKELETON",4,22,12,1,1,50,
-		"BALROG",5,18,110,1,1,5000,
-		"OCHRE JELLY",6,11,20,1,1,0,
-		"GREY OOZE",7,11,13,1,1,0,
-		"GNOME",8,13,30,1,1,100,
-		"KOBOLD",9,15,16,1,1,500,
-		"MUMMY",10,16,30,1,1,100
+		"MAN",         1,13,26,1,1,500,
+		"GOBLIN",      2,13,24,1,1,600,
+		"TROLL",       3,15,35,1,1,1000,
+		"SKELETON",    4,22,12,1,1,50,
+		"BALROG",      5,18,110,1,1,5000,
+		"OCHRE JELLY", 6,11,20,1,1,0,
+		"GREY OOZE",   7,11,13,1,1,0,
+		"GNOME",       8,13,30,1,1,100,
+		"KOBOLD",      9,15,16,1,1,500,
+		"MUMMY",      10,16,30,1,1,100
 	);
 	//These are easier monsters to fight
 	var monsterlist = Array
@@ -3286,7 +3291,6 @@ function dddisplaydungeon(dungeonmaparray)
 </script>
 </head>
 <body>
-
 <script>
 
 ddinit();
