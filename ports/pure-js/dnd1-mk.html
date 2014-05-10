@@ -3237,17 +3237,59 @@ function ddmovemonstercloser()
 	//not the DA dungeon coordinates
 	var absr8 = Math.abs(ddglobal['R8']);
 	var absr9 = Math.abs(ddglobal['R9']);
-	if(absr8 > absr9)
+	//Adding in I9 variable check to keep monster from getting stuck as much.
+	dddebug( ddglobal['I9'] );
+	dddebug( ddiseven( ddglobal['I9'] ) );
+	dddebug( absr8 );
+	dddebug( absr9 );
+	var tryoneway = false
+	if( absr8 > absr9 )
+	{
+		tryoneway = true;
+	}
+	else
+	{
+		tryoneway = false;
+	}
+	if( ddisodd( ddglobal['I9'] ) )
+	{
+		if( tryoneway == true )
+		{
+			tryoneway = false;
+		}
+		else
+		{
+			tryoneway = true;
+		}
+	}
+
+	if( tryoneway )
 	{
 		//GOTO 07260
-		ddglobal['F5'] = -(ddglobal['R8'] / absr8);
+		if( absr8 == 0 )
+		{
+			ddglobal['F5'] = 0;
+		}
+		else
+		{
+			ddglobal['F5'] = -(ddglobal['R8'] / absr8);
+		}
 		ddglobal['F6'] = 0;
 	}
 	else
 	{
 		ddglobal['F5'] = 0;
-		ddglobal['F6'] = -(ddglobal['R9'] / absr9);
+		if( absr9 == 0 )
+		{
+			ddglobal['F6'] = 0;
+		}
+		else
+		{
+			ddglobal['F6'] = -(ddglobal['R9'] / absr9);
+		}
 	}
+	dddebug( ddglobal['F5'] );
+	dddebug( ddglobal['F6'] );
 	if( (ddglobal['G'] == (ddglobal['F1'] + ddglobal['F5']) ) && 
 	(ddglobal['H'] == ddglobal['F2'] + ddglobal['F6']) )
 	{
@@ -3272,6 +3314,7 @@ function ddmovemonstercloser()
 					{
 						dddebug("ddtrymonstermovenewtile");
 						ddtrymonstermovenewtile(Q);
+						Q = 9;
 					}
 				}
 			}
@@ -3330,6 +3373,7 @@ function ddmovemonsteraway()
 					{
 						dddebug("ddtrymonstermovenewtile");
 						ddtrymonstermovenewtile(Q);
+						Q = 9;
 					}
 				}
 			}
@@ -3525,6 +3569,25 @@ function ddrandom(low, high)
 	var randomnumber = Math.floor((Math.random() * high) + 1);
 	return randomnumber;
 }
+
+function ddiseven(value)
+{
+	if( (value % 2) == 0 )
+	{
+		return true;
+	}
+	return false;
+}
+
+function ddisodd(value)
+{
+	if( (value % 2) == 0 )
+	{
+		return false;
+	}
+	return true;
+}
+
 
 /*
 Throw error to end program
