@@ -554,6 +554,7 @@ free do over command.
 */
 function ddcommandlist_pre()
 {
+	//ddshowstacktrace();
 	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")");
 	//ddwr("COMMANDS LIST");
 	//kabalyero wanted auto looking
@@ -570,6 +571,12 @@ function ddcommandlist_pre()
 	ddwr("1=MOVE 2=OPEN DOOR 3=SEARCH 4=EQUIP WEAPON 5=FIGHT 6=LOOK");
 	ddwr("7=SAVE GAME 8=USE MAGIC 9=BUY MAGIC 0=PASS 11=BUY H.P.");
 	ddwrgetinput('ddcommandlist');
+}
+
+function ddshowstacktrace()
+{
+	e = new Error();
+	console.log(e.stack);
 }
 
 /*
@@ -2990,8 +2997,11 @@ line 08030
 */
 function ddcheckplacementbounds(M, N)
 {
+	//The original code used this to place monsters
+	//Reused this for checking map edges.
+	//The old code would not let monsters on 0
 	var spotcheck = true;
-	if( (ddglobal['G'] + M) < 1 )
+	if( (ddglobal['G'] + M) < 0 )
 	{
 		spotcheck = false;
 	}
@@ -2999,7 +3009,7 @@ function ddcheckplacementbounds(M, N)
 	{
 		spotcheck = false;
 	}
-	if( (ddglobal['H'] + N) < 1 )
+	if( (ddglobal['H'] + N) < 0 )
 	{
 		spotcheck = false;
 	}
@@ -3725,10 +3735,10 @@ function dddungeondata1()
 	var durow = Array();
 	var ducol = Array();
 durow[0]  = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
-durow[1]  = "1,6,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,6,1,1,1,6,1";
+durow[1]  = "1,6,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,6,2,1,1,1,6,1";
 durow[2]  = "1,0,1,4,1,1,1,0,1,0,1,0,4,0,1,0,1,6,1,1,0,0,1,0,0,1";
-durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,6,2,4,0,0,1,0,0,1";
-durow[4]  = "1,0,1,6,0,0,1,0,4,0,1,0,1,0,1,0,1,6,1,1,0,0,1,0,0,1";
+durow[3]  = "1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,6,2,4,0,0,3,0,0,1";
+durow[4]  = "1,0,1,6,0,0,1,0,4,0,1,0,1,0,1,0,1,6,1,1,0,0,3,0,0,1";
 durow[5]  = "1,4,1,1,0,0,1,3,1,4,1,0,1,4,1,0,1,0,1,0,0,1,1,1,0,1";
 durow[6]  = "1,0,0,0,0,0,2,0,0,0,7,0,0,0,0,0,1,1,1,1,1,1,0,1,0,1";
 durow[7]  = "1,0,1,3,1,4,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1";
