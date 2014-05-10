@@ -10,12 +10,16 @@ function ddinit()
 	//document.write('</pre>');
 	document.write('<br>');
 	document.write('<input id="command" name="command" type="text" size="80" onkeydown="Javascript: if (event.keyCode==13) ddcliinterpreter(this)">');
+	document.write('<br>');
 	document.write("\n");
-	document.write('<pre id="mappad">');
-	document.write('</pre>');
+	document.write('<span id="mappad">');
+	document.write('</span>');
 	document.write("\n");
-	document.write('<pre id="charpad">');
-	document.write('</pre>');
+	document.write('<span id="charpad">');
+	document.write('</span>');
+	document.write("\n");
+	document.write('<span id="eqpad">');
+	document.write('</span>');
 	document.write("\n");
 	consoleobj = document.getElementById('console');
 	//consoleobj.style.font="bold 12px courier,monospace";
@@ -31,14 +35,29 @@ function ddinit()
 	mappadobj.style.backgroundColor='#000000';
 	mappadobj.style.color='#FFFFFF';
 	//mappadobj.style.width='92px';
-	mappadobj.style.display='table-cell';
+	//mappadobj.style.display='table-cell';
 	mappadobj.style.fontSize='x-large';
 	//mappadobj.style.fontStretch='ultra-expanded';
 	//mappadobj.style.letterSpacing='1px';
+	mappadobj.style.cssFloat='left';
+	mappadobj.style.fontFamily='monospace';
+	mappadobj.style.whiteSpace='pre';
 	charpadobj = document.getElementById('charpad');
-	charpadobj.style.display='table-cell';
+	//charpadobj.style.display='table-cell';
 	//charpadobj.style.fontSize='x-large';
 	charpadobj.style.padding='4px 0px 0px 12px';
+	charpadobj.style.cssFloat='left';
+	charpadobj.style.fontFamily='monospace';
+	charpadobj.style.whiteSpace='pre';
+	charpadobj = document.getElementById('charpad');
+	eqpadobj = document.getElementById('eqpad');
+	//eqpadobj.style.display='table-cell';
+	//eqpadobj.style.display='inline';
+	eqpadobj.style.cssFloat='left';
+	//eqpadobj.style.fontSize='x-large';
+	eqpadobj.style.padding='4px 0px 0px 12px';
+	eqpadobj.style.fontFamily='monospace';
+	eqpadobj.style.whiteSpace='pre';
 	ddinitglobalmemory();
 	ddintro();
 }
@@ -507,6 +526,7 @@ function ddcommandlist_pre()
 	//kabalyero wanted auto looking
 	ddautolookaround();
 	ddupdatecharpad();
+	ddupdateeqpad();
 	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
 	//ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
 	//ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
@@ -718,6 +738,20 @@ function ddupdatecharpad()
 	csh = csh+'GOLD:'+ddglobal['C'][7]+"\n";
 
 	charpadobj.innerHTML = csh;
+}
+
+function ddupdateeqpad()
+{
+	var csh = '';
+	csh = csh+'EQUIPMENT'+"\n";
+	for( M = 1; M <= ddglobal['X']; M++)
+	{
+		if( ddglobal['W'][M] != 0 )
+		{
+			csh = csh+ddglobal['W'][M]+" - "+ddglobal['IS'][ddglobal['W'][M]]+"\n";
+		}
+	}
+	eqpadobj.innerHTML = csh;
 }
 
 /*
