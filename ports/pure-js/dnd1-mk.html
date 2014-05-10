@@ -2084,7 +2084,7 @@ X4 must be what the player has purchased
 function ddcastwizard(cliinput)
 {
 	ddglobal['Q'] = cliinput;
-	if( (cliinput >= 1) && (cliinput <= ddglobal['X3']) )
+	if( (cliinput >= 1) && (cliinput <= 9) )
 	{
 		var havespellflag = null;
 		for(var M = 1; M <= ddglobal['X3']; M++)
@@ -2097,7 +2097,7 @@ function ddcastwizard(cliinput)
 		if( havespellflag != null )
 		{
 			//GOTO 09390
-			dddeterminewizardspelleffect();
+			dddeterminewizardspelleffect(cliinput, havespellflag);
 		}
 		else
 		{
@@ -2115,10 +2115,113 @@ function ddcastwizard(cliinput)
 /*
 line 09390
 */
-function dddeterminewizardspelleffect()
+
+function dddeterminewizardspelleffect(spellnum, memnum)
 {
 	ddwr("YOU CAST A WIZARD SPELL");
-	ddwr("NOT IMPLEMENTED YET");
+	//ddwr("NOT IMPLEMENTED YET");
+	if(spellnum == 1)
+	{
+		//GOTO 09420
+		//PUSH
+		ddwr("GUST OF WIND HITS MONSTER");
+		var damage = 0 + ddrandom(1, 2);
+		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
+		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+		ddmovemonsteraway();
+		ddglobal['X2'][memnum] = 0;
+	}
+	else if(spellnum == 2)
+	{
+		//GOTO 09660
+		//KIHL
+		if( ddrandom(1, 3) > 1 )
+		{
+			ddwr("DONE");
+			ddglobal['X2'][memnum] = 0;
+			ddglobal['K1'] = -1;
+		}
+		else
+		{
+			ddwr("FAILED");
+		}
+	}
+	else if(spellnum == 3)
+	{
+		//same as cleric spell
+		//GOTO 09090
+		//search for traps
+		//Q = 2
+		//GOTO 09800
+		ddwr("CASTING");
+		ddgenericsearchspell(3, 2);
+		ddglobal['X2'][memnum] = 0;
+	}
+	else if(spellnum == 4)
+	{
+		//GOTO 09800
+		//TELEPORT
+	}
+	else if(spellnum == 5)
+	{
+		//GOTO 09860
+		//CHANGE 1+0
+		//REMOVE WALL
+		ddwr("NOT IMPLEMENTED YET");
+	}
+	else if(spellnum == 6)
+	{
+		//GOTO 09950
+		//MAGIC MISSILE #1
+		//Q = 3
+		ddwr("DONE");
+		var damage = 3 + ddrandom(1, 11);
+		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
+		ddglobal['X2'][memnum] = 0;
+		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+	}
+	else if(spellnum == 7)
+	{
+		//GOTO 09950
+		//MAGIC MISSILE #2
+		//Q = 6
+		ddwr("DONE");
+		var damage = 6 + ddrandom(1, 11);
+		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
+		ddglobal['X2'][memnum] = 0;
+		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+	}
+	else if(spellnum == 8)
+	{
+		//MAGIC MISSILE #3
+		//Q = 9
+		ddwr("DONE");
+		var damage = 9 + ddrandom(1, 11);
+		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
+		ddglobal['X2'][memnum] = 0;
+		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+	}
+	else if(spellnum == 9)
+	{
+		//GOTO 09090
+		//same as cleric spell
+		//search for secret doors
+		//Q = 3
+		ddwr("CASTING");
+		ddgenericsearchspell(3, 3);
+		ddglobal['X2'][memnum] = 0;
+	}
+	else if(spellnum == 10)
+	{
+		//GOTO 09090
+		//CHANGE 0+1
+		//ADD WALL
+		ddwr("NOT IMPLEMENTED YET");
+	}
+	else
+	{
+		ddwr("YOU DONT HAVE THAT SPELL");
+	}
 	ddmaintimeloop();
 }
 
@@ -2256,7 +2359,7 @@ function ddlistwizardmagic(cliinput)
 		//ddwr("4-TELEPORT-750  9-FIND S.DOORS-200");
 		//ddwr("5-CHANGE 1+0-600  10-CHANGE 0+1-600");
 		//ddwr("#OF ONE YOU WANT  NEG.NUM.TO STOP");
-		for(var M = 0; M <= 10; M++)
+		for(var M = 1; M <= 10; M++)
 		{
 			ddwr("("+M+")- "+ddglobal['E3'][M]+" - "+ddglobal['E4'][M]);
 		}
@@ -2792,34 +2895,92 @@ function ddmovemonstercloser()
 		ddglobal['F5'] = 0;
 		ddglobal['F6'] = -(ddglobal['R9'] / absr9);
 	}
-	//This is not in the original code
-	var oldxcoordinate = ddglobal['F1'];
-	var oldycoordinate = ddglobal['F2'];
-	//loop through all the dungeon tile types
-	for(var Q = 0; Q <= 8 ; Q++)
+	if( (ddglobal['G'] == (ddglobal['F1'] + ddglobal['F5']) ) && 
+	(ddglobal['H'] == ddglobal['F2'] + ddglobal['F6']) )
 	{
-		if( (Q != 1) && (Q != 5) )
-		{
-			var xcoordinate = ddglobal['F1'] + ddglobal['F5'];
-			var ycoordinate = ddglobal['F2'] + ddglobal['F6'];
-			if( !ddcheckdungeonbounds(xcoordinate, ycoordinate) )
-			{
-				if( ddglobal['DA'][xcoordinate][ycoordinate] == Q )
-				{
-					dddebug("ddtrymonstermovenewtile");
-					ddtrymonstermovenewtile(Q);
-				}
-			}
-		}
-	}
-	//This is not in the original code
-	if( (ddglobal['F1'] == oldxcoordinate) && (ddglobal['F2'] == oldycoordinate) )
-	{
-		ddglobal['I9'] = ddglobal['I9'] + 1;
+		//Do not want monster moving into player space
 	}
 	else
 	{
-		ddglobal['I9'] = 0;
+		//This is not in the original code
+		var oldxcoordinate = ddglobal['F1'];
+		var oldycoordinate = ddglobal['F2'];
+	
+		//loop through all the dungeon tile types
+		for(var Q = 0; Q <= 8 ; Q++)
+		{
+			if( (Q != 1) && (Q != 5) )
+			{
+				var xcoordinate = ddglobal['F1'] + ddglobal['F5'];
+				var ycoordinate = ddglobal['F2'] + ddglobal['F6'];
+				if( !ddcheckdungeonbounds(xcoordinate, ycoordinate) )
+				{
+					if( ddglobal['DA'][xcoordinate][ycoordinate] == Q )
+					{
+						dddebug("ddtrymonstermovenewtile");
+						ddtrymonstermovenewtile(Q);
+					}
+				}
+			}
+		}
+		//This is not in the original code
+		if( (ddglobal['F1'] == oldxcoordinate) && (ddglobal['F2'] == oldycoordinate) )
+		{
+			ddglobal['I9'] = ddglobal['I9'] + 1;
+		}
+		else
+		{
+			ddglobal['I9'] = 0;
+		}
+	}
+}
+
+function ddmovemonsteraway()
+{
+	//R8 and R9 are set in the ddsetmonsterrange
+	//which should have run by now
+	//note that they are the distance from the character
+	//not the DA dungeon coordinates
+	var absr8 = Math.abs(ddglobal['R8']);
+	var absr9 = Math.abs(ddglobal['R9']);
+	if(absr8 > absr9)
+	{
+		//GOTO 07260
+		ddglobal['F5'] = +(ddglobal['R8'] / absr8);
+		ddglobal['F6'] = 0;
+	}
+	else
+	{
+		ddglobal['F5'] = 0;
+		ddglobal['F6'] = +(ddglobal['R9'] / absr9);
+	}
+	if( (ddglobal['G'] == (ddglobal['F1'] + ddglobal['F5']) ) && 
+	(ddglobal['H'] == ddglobal['F2'] + ddglobal['F6']) )
+	{
+		//Do not want monster moving into player space
+	}
+	else
+	{
+		//This is not in the original code
+		var oldxcoordinate = ddglobal['F1'];
+		var oldycoordinate = ddglobal['F2'];
+		//loop through all the dungeon tile types
+		for(var Q = 0; Q <= 8 ; Q++)
+		{
+			if( (Q != 1) && (Q != 5) )
+			{
+				var xcoordinate = ddglobal['F1'] + ddglobal['F5'];
+				var ycoordinate = ddglobal['F2'] + ddglobal['F6'];
+				if( !ddcheckdungeonbounds(xcoordinate, ycoordinate) )
+				{
+					if( ddglobal['DA'][xcoordinate][ycoordinate] == Q )
+					{
+						dddebug("ddtrymonstermovenewtile");
+						ddtrymonstermovenewtile(Q);
+					}
+				}
+			}
+		}
 	}
 }
 
