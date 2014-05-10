@@ -21,6 +21,9 @@ function ddinit()
 	document.write('<span id="eqpad">');
 	document.write('</span>');
 	document.write("\n");
+	document.write('<span id="spellpad">');
+	document.write('</span>');
+	document.write("\n");
 	consoleobj = document.getElementById('console');
 	//consoleobj.style.font="bold 12px courier,monospace";
 	//consoleobj.style.backgroundColor='#000000';
@@ -58,6 +61,12 @@ function ddinit()
 	eqpadobj.style.padding='4px 0px 0px 12px';
 	eqpadobj.style.fontFamily='monospace';
 	eqpadobj.style.whiteSpace='pre';
+	spellpadobj = document.getElementById('spellpad');
+	spellpadobj.style.cssFloat='left';
+	//spellpadobj.style.fontSize='x-large';
+	spellpadobj.style.padding='4px 0px 0px 12px';
+	spellpadobj.style.fontFamily='monospace';
+	spellpadobj.style.whiteSpace='pre';
 	ddinitglobalmemory();
 	ddintro();
 }
@@ -527,6 +536,7 @@ function ddcommandlist_pre()
 	ddautolookaround();
 	ddupdatecharpad();
 	ddupdateeqpad();
+	ddupdatespellpad();
 	//ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
 	//ddwr("1=MOVE  2=OPEN DOOR  3=SEARCH FOR TRAPS AND SECRET DOORS");
 	//ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
@@ -752,6 +762,27 @@ function ddupdateeqpad()
 		}
 	}
 	eqpadobj.innerHTML = csh;
+}
+
+function ddupdatespellpad()
+{
+	var csh = '';
+	csh = csh+'SPELLS'+"\n";
+	for( M = 1; M <= ddglobal['X1']; M++)
+	{
+		if( ddglobal['X2'][M] != 0 )
+		{
+			csh = csh+ddglobal['X2'][M]+" - "+ddglobal['E1'][ddglobal['X2'][M]]+"\n";
+		}
+	}
+	for( M = 1; M <= ddglobal['X3']; M++)
+	{
+		if( ddglobal['X4'][M] != 0 )
+		{
+			csh = csh+ddglobal['X4'][M]+" - "+ddglobal['E3'][ddglobal['X4'][M]]+"\n";
+		}
+	}
+	spellpadobj.innerHTML = csh;
 }
 
 /*
