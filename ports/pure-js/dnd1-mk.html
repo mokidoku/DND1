@@ -705,7 +705,7 @@ function ddupdatecharpad()
 {
 	var csh = '';
 
-	csh = csh+'PLAYERS NAME:'+'SHAVS'+"\n";
+	csh = csh+'NAME:'+'SHAVS'+"\n";
 	csh = csh+'CLASS:'+ddglobal['CS'][0]+"\n";
 	csh = csh+'STR:'+ddglobal['C'][1]+"\n";
 	csh = csh+'DEX:'+ddglobal['C'][2]+"\n";
@@ -715,7 +715,7 @@ function ddupdatecharpad()
 	csh = csh+'CHA:'+ddglobal['C'][6]+"\n";
 	csh = csh+''+"\n";
 	csh = csh+'HP:'+ddglobal['C'][0]+"\n";
-	csh = csh+''+"\n";
+	csh = csh+'GOLD:'+ddglobal['C'][7]+"\n";
 
 	charpadobj.innerHTML = csh;
 }
@@ -795,6 +795,17 @@ function ddmaintimeloop()
 	if( ddglobal['C'][0] < 2 )
 	{
 		ddplayerhurtbad();
+	}
+	//This was not in the original code
+	//Despawn if a monster has not moved or attacked for 10 rounds
+	if( ddglobal['K'] > 0 )
+	{
+		if( ddglobal['I9'] > 20 )
+		{
+			//monster is bored
+			ddwr("MONSTER SLIPS AWAY INTO THE DARKNESS");
+			ddmonsterfled();
+		}
 	}
 	//if we still have a monster check for attacks
 	if( ddglobal['K'] > 0 )
@@ -2478,6 +2489,7 @@ function ddwanderingmonster()
 					//GOTO 08000
 					ddtryplacemonster(M);
 					ddwr(ddglobal['BS'][M]+" at ("+ddglobal['F1']+","+ddglobal['F2']+")");
+					ddglobal['I9'] = 0;
 					return;
 				}
 			}
@@ -2780,6 +2792,9 @@ function ddmovemonstercloser()
 		ddglobal['F5'] = 0;
 		ddglobal['F6'] = -(ddglobal['R9'] / absr9);
 	}
+	//This is not in the original code
+	var oldxcoordinate = ddglobal['F1'];
+	var oldycoordinate = ddglobal['F2'];
 	//loop through all the dungeon tile types
 	for(var Q = 0; Q <= 8 ; Q++)
 	{
@@ -2796,7 +2811,15 @@ function ddmovemonstercloser()
 				}
 			}
 		}
-
+	}
+	//This is not in the original code
+	if( (ddglobal['F1'] == oldxcoordinate) && (ddglobal['F2'] == oldycoordinate) )
+	{
+		ddglobal['I9'] = ddglobal['I9'] + 1;
+	}
+	else
+	{
+		ddglobal['I9'] = 0;
 	}
 }
 
@@ -3180,6 +3203,8 @@ function ddinitglobalmemory()
 	//R8 and R9 are the location coordinates of any spawned monster
 	ddglobal['R8'] = null;
 	ddglobal['R9'] = null;
+	//I9 keeps track of how long the monster has not done anything
+	ddglobal['I9'] = 0;
 }
 
 function dddisplaymonster()
