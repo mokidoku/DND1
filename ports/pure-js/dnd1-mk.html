@@ -815,49 +815,56 @@ line 06550
 function ddseeversusreal(lookm, lookn)
 {
 	var displaychar = '';
-	var locg = ddglobal['G'] + lookm;
-	var loch = ddglobal['H'] + lookn;
-	var tiletypenumber = ddglobal['DA'][locg][loch];
-	if( tiletypenumber == 0 )
+	if( ddcheckplacementbounds(lookm, lookn) == true )
 	{
-		displaychar = ' ';
-	}
-	else if( tiletypenumber == 1 )
-	{
-		displaychar = '*';
-	}
-	else if( tiletypenumber == 2)
-	{
-		displaychar = ' ';
-	}
-	else if( tiletypenumber == 3)
-	{
-		//secret door
-		displaychar = '*';
-	}
-	else if( tiletypenumber == 4)
-	{
-		displaychar = '4';
-	}
-	else if( tiletypenumber == 5)
-	{
-		displaychar = '5';
-	}
-	else if( tiletypenumber == 6)
-	{
-		displaychar = 'O';
-	}
-	else if( tiletypenumber == 7)
-	{
-		displaychar = '.';
-	}
-	else if( tiletypenumber == 8)
-	{
-		displaychar = '.';
+		var locg = ddglobal['G'] + lookm;
+		var loch = ddglobal['H'] + lookn;
+		var tiletypenumber = ddglobal['DA'][locg][loch];
+		if( tiletypenumber == 0 )
+		{
+			displaychar = ' ';
+		}
+		else if( tiletypenumber == 1 )
+		{
+			displaychar = '*';
+		}
+		else if( tiletypenumber == 2)
+		{
+			displaychar = ' ';
+		}
+		else if( tiletypenumber == 3)
+		{
+			//secret door
+			displaychar = '*';
+		}
+		else if( tiletypenumber == 4)
+		{
+			displaychar = '4';
+		}
+		else if( tiletypenumber == 5)
+		{
+			displaychar = '5';
+		}
+		else if( tiletypenumber == 6)
+		{
+			displaychar = 'O';
+		}
+		else if( tiletypenumber == 7)
+		{
+			displaychar = '.';
+		}
+		else if( tiletypenumber == 8)
+		{
+			displaychar = '.';
+		}
+		else
+		{
+			displaychar = tiletypenumber;
+		}
 	}
 	else
 	{
-		displaychar = tiletypenumber;
+		displaychar = ' ';
 	}
 	return displaychar;
 }
@@ -874,6 +881,8 @@ input from the player to find out what they want to do.
 */
 function ddmaintimeloop()
 {
+	dddebug(ddglobal['H']);
+	dddebug(ddglobal['G']);
 	//check to see if monster died from attacks
 	if( ddglobal['K1'] == -1 )
 	{
@@ -2396,6 +2405,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
 		ddmovemonsteraway();
 		ddglobal['X2'][memnum] = 0;
+		ddmaintimeloop();
 	}
 	else if(spellnum == 2)
 	{
@@ -2411,6 +2421,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		{
 			ddwr("FAILED");
 		}
+		ddmaintimeloop();
 	}
 	else if(spellnum == 3)
 	{
@@ -2422,11 +2433,14 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("CASTING");
 		ddgenericsearchspell(3, 2);
 		ddglobal['X2'][memnum] = 0;
+		ddmaintimeloop();
 	}
 	else if(spellnum == 4)
 	{
 		//GOTO 09800
 		//TELEPORT
+		ddwr("INPUT X CO-ORDINATE");
+		ddwrgetinput('ddteleportgetxcoordinate');
 	}
 	else if(spellnum == 5)
 	{
@@ -2434,6 +2448,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//CHANGE 1+0
 		//REMOVE WALL
 		ddwr("NOT IMPLEMENTED YET");
+		ddmaintimeloop();
 	}
 	else if(spellnum == 6)
 	{
@@ -2445,6 +2460,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
 		ddglobal['X2'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+		ddmaintimeloop();
 	}
 	else if(spellnum == 7)
 	{
@@ -2456,6 +2472,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
 		ddglobal['X2'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+		ddmaintimeloop();
 	}
 	else if(spellnum == 8)
 	{
@@ -2466,6 +2483,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
 		ddglobal['X2'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
+		ddmaintimeloop();
 	}
 	else if(spellnum == 9)
 	{
@@ -2476,6 +2494,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("CASTING");
 		ddgenericsearchspell(3, 3);
 		ddglobal['X2'][memnum] = 0;
+		ddmaintimeloop();
 	}
 	else if(spellnum == 10)
 	{
@@ -2483,12 +2502,68 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//CHANGE 0+1
 		//ADD WALL
 		ddwr("NOT IMPLEMENTED YET");
+		ddmaintimeloop();
 	}
 	else
 	{
 		ddwr("YOU DONT HAVE THAT SPELL");
+		ddmaintimeloop();
 	}
-	ddmaintimeloop();
+}
+
+/*
+line 09800
+*/
+function ddteleportgetxcoordinate(cliinput)
+{
+	ddglobal['U5'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddwr("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddteleportgetycoordinate');
+	}
+	else
+	{
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddteleportgetxcoordinate');
+	}
+}
+
+function ddteleportgetycoordinate(cliinput)
+{
+	ddglobal['U6'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddtryteleport();
+	}
+	else
+	{
+		ddwrite("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddteleportgetycoordinate');
+	}
+}
+
+/*
+line 09830
+*/
+function ddtryteleport()
+{
+	var U5 = ddglobal['U5'];
+	var U6 = ddglobal['U6'];
+	if( ddglobal['DA'][U5][U6] == 1 )
+	{
+		ddwr("YOU TELEPORTED INTO A WALL");
+		ddwr("SORRY YOUR DEAD");
+		ddendprogram();
+	}
+	else
+	{
+		//It would be better if this invoked the move function so that
+		//traps, vapors, and other effects would happen.
+		ddglobal['G'] = U5;
+		ddglobal['H'] = U6;
+		ddmaintimeloop();
+	}
 }
 
 /*
@@ -2892,6 +2967,8 @@ function ddtryplacemonster(monsternumber)
 					{
 						var locg = ddglobal['G'] + M;
 						var loch = ddglobal['H'] + N;
+						dddebug("locg="+locg);
+						dddebug("loch="+loch);
 						if( ddglobal['DA'][locg][loch] == 0 )
 						{
 							dddropinthemonster(monsternumber, locg, loch);
