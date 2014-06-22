@@ -520,8 +520,28 @@ function ddloaddungeon()
 	}
 	//ddwr("DEBUG DISPLAY DUNGEON");
 	//dddisplaydungeon(ddglobal['DA']);
+	ddsetstartlocation();
 	ddyeastart();
 }
+
+/*
+Simple function to try 100 times to try and place character in an empty spot.
+If it finds an empty spot it stops. If no empty spot is found after 100 tries
+then the character is stuck in the last random spot attempted.
+*/
+function ddsetstartlocation()
+{
+	for(var M = 1; M <= 100; M++)
+	{
+		ddglobal['G'] = ddrandom(1, 23) + 1;
+		ddglobal['H'] = ddrandom(1, 23) + 1;
+		if(ddglobal['DA'][ddglobal['G']][ddglobal['H']] == 0)
+		{
+			M = 100;
+		}
+	}
+}
+
 
 /*
 line 01443
@@ -3687,6 +3707,8 @@ function ddinitglobalmemory()
 	ddglobal['FILE'][6] = dddungeondata6();
 	//G is row location
 	//H is column location
+	//Original code would set location here but I am going to add something
+	//to the dungeon load routine to check if location is inside a wall later
 	ddglobal['G'] = ddrandom(1, 23) + 1;
 	ddglobal['H'] = ddrandom(1, 23) + 1;
 	//K is if there is a monster to fight or not
