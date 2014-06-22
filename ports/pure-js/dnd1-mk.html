@@ -847,52 +847,61 @@ function ddseeversusreal(lookm, lookn)
 	{
 		var locg = ddglobal['G'] + lookm;
 		var loch = ddglobal['H'] + lookn;
-		var tiletypenumber = ddglobal['DA'][locg][loch];
-		if( tiletypenumber == 0 )
-		{
-			displaychar = ' ';
-		}
-		else if( tiletypenumber == 1 )
-		{
-			displaychar = '*';
-		}
-		else if( tiletypenumber == 2)
-		{
-			displaychar = ' ';
-		}
-		else if( tiletypenumber == 3)
-		{
-			//secret door
-			displaychar = '*';
-		}
-		else if( tiletypenumber == 4)
-		{
-			displaychar = '4';
-		}
-		else if( tiletypenumber == 5)
-		{
-			displaychar = '5';
-		}
-		else if( tiletypenumber == 6)
-		{
-			displaychar = '$';
-		}
-		else if( tiletypenumber == 7)
-		{
-			displaychar = '.';
-		}
-		else if( tiletypenumber == 8)
-		{
-			displaychar = '.';
-		}
-		else
-		{
-			displaychar = tiletypenumber;
-		}
+		displaychar = ddseeversusrealtilechange(locg, loch);
 	}
 	else
 	{
 		displaychar = ' ';
+	}
+	return displaychar;
+}
+
+/*
+Switch out tile number for an ascii character representation for the tile.
+*/
+function ddseeversusrealtilechange(absm, absn)
+{
+	var tiletypenumber = ddglobal['DA'][absm][absn];
+	if( tiletypenumber == 0 )
+	{
+		displaychar = ' ';
+	}
+	else if( tiletypenumber == 1 )
+	{
+		displaychar = '*';
+	}
+	else if( tiletypenumber == 2)
+	{
+		displaychar = ' ';
+	}
+	else if( tiletypenumber == 3)
+	{
+		//secret door
+		displaychar = '*';
+	}
+	else if( tiletypenumber == 4)
+	{
+		displaychar = '4';
+	}
+	else if( tiletypenumber == 5)
+	{
+		displaychar = '5';
+	}
+	else if( tiletypenumber == 6)
+	{
+		displaychar = '$';
+	}
+	else if( tiletypenumber == 7)
+	{
+		displaychar = '.';
+	}
+	else if( tiletypenumber == 8)
+	{
+		displaychar = '.';
+	}
+	else
+	{
+		displaychar = tiletypenumber;
 	}
 	return displaychar;
 }
@@ -1255,12 +1264,13 @@ function ddlookcheat()
 {
 	for(var M = 0; M <= 25; M++)
 	{
-		var linetext = '';
+		var linestring = '';
 		for(var N = 0; N <=25; N++)
 		{
-			linetext = linetext+''+ddglobal['DA'][M][N];
+			//linestring = linestring+''+ddglobal['DA'][M][N];
+			linestring = linestring+''+ddseeversusrealtilechange(M, N);
 		}
-		ddwr(linetext);
+		ddwr(linestring);
 	}
 	//GOTO 01590
 	ddcommandlist_pre();
