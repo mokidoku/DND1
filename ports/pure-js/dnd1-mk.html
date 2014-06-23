@@ -345,32 +345,29 @@ line 00830
 */
 function ddbuyingweapons(cliinput)
 {
-	//ddglobal['Y'] = cliinput;
+	ddglobal['Y'] = cliinput;
 	if(cliinput == 'L')
 	{
 		ddbuyingweapons_pre();
 	}
-	else
+	else if( (parseInt(cliinput) >= 0) && (parseInt(cliinput) <= 16) )
 	{
-		//this varies from the old code
-		if(isNaN(cliinput))
+		cliinput = parseInt(cliinput);
+		ddglobal['Y'] = cliinput;
+		if(cliinput == 0)
 		{
-			ddwr("ENTER NUMBER 0 - 16 or L");
-			ddwrgetinput('ddbuyingweapons');
+			ddgoldcount_pre();
 		}
 		else
 		{
-			cliinput = parseInt(cliinput);
-			ddglobal['Y'] = cliinput;
-			if((cliinput < 1) || (cliinput > 16))
-			{
-				ddgoldcount_pre();
-			}
-			else
-			{
-				ddpurchasecheck();
-			}
+			ddpurchasecheck();
 		}
+	}
+	else
+	{
+		//unknown input
+		ddwr("ENTER NUMBER 0 - 16 or L");
+		ddwrgetinput('ddbuyingweapons');
 	}
 }
 
@@ -3794,6 +3791,7 @@ function ddinitglobalmemory()
 		"MUMMY",      10,16,30,1,1,100
 	);
 	//These are easier monsters to fight
+	//key, attack value, hit points, ?, ?, gold
 	var monsterlist = Array
 	(
 		"MAN",         1,10,16,1,1,500,
