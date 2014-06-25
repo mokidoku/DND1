@@ -2211,8 +2211,6 @@ line 06610
 */
 function ddsavegame()
 {
-	//ddglobal['FILE'][7] = Array();
-	//document.cookie = JSON.stringify(ddglobal);
 	var savedgame = JSON.stringify(ddglobal);
 	dddebug(savedgame);
 	localStorage.setItem('DND1', savedgame);
@@ -2294,7 +2292,6 @@ line 08830
 function dddetermineclericspelleffect(spellnum, memnum)
 {
 	ddwr("YOU CAST A CLERIC SPELL");
-	//ddwr("NOT IMPLEMENTED YET");
 	if(spellnum == 1)
 	{
 		//GOTO 08950
@@ -2458,7 +2455,6 @@ line 09390
 function dddeterminewizardspelleffect(spellnum, memnum)
 {
 	ddwr("YOU CAST A WIZARD SPELL");
-	//ddwr("NOT IMPLEMENTED YET");
 	if(spellnum == 1)
 	{
 		//GOTO 09420
