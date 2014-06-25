@@ -2499,7 +2499,8 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 	{
 		//GOTO 09800
 		//TELEPORT
-		ddwr("INPUT X CO-ORDINATE");
+		ddglobal['X2'][memnum] = 0;
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
 		ddwrgetinput('ddteleportgetxcoordinate');
 	}
 	else if(spellnum == 5)
@@ -2507,8 +2508,10 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//GOTO 09860
 		//CHANGE 1+0
 		//REMOVE WALL
-		ddwr("NOT IMPLEMENTED YET");
-		ddmaintimeloop();
+		//ddwr("NOT IMPLEMENTED YET");
+		ddglobal['X2'][memnum] = 0;
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddremovewallgetxcoordinate');
 	}
 	else if(spellnum == 6)
 	{
@@ -2613,7 +2616,7 @@ function ddtryteleport()
 	if( ddglobal['DA'][U5][U6] == 1 )
 	{
 		ddwr("YOU TELEPORTED INTO A WALL");
-		ddwr("SORRY YOUR DEAD");
+		ddwr("SORRY YOURE DEAD");
 		ddendprogram();
 	}
 	else
@@ -2622,6 +2625,59 @@ function ddtryteleport()
 		//traps, vapors, and other effects would happen.
 		ddglobal['G'] = U5;
 		ddglobal['H'] = U6;
+		ddmaintimeloop();
+	}
+}
+
+/*
+
+*/
+function ddremovewallgetxcoordinate(cliinput)
+{
+	ddglobal['U5'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddwr("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddremovewallgetycoordinate');
+	}
+	else
+	{
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddremovewallgetycoordinate');
+	}
+}
+
+function ddremovewallgetycoordinate(cliinput)
+{
+	ddglobal['U6'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddtryremovewall();
+	}
+	else
+	{
+		ddwrite("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddremovewallgetycoordinate');
+	}
+}
+
+/*
+line 09830
+*/
+function ddtryremovewall()
+{
+	var U5 = ddglobal['U5'];
+	var U6 = ddglobal['U6'];
+	if( ddglobal['DA'][U5][U6] == 1 )
+	{
+		ddwr("THE WALL DISAPPEARS");
+		ddglobal['DA'][U5][U6] = 0;
+		ddmaintimeloop();
+	}
+	else
+	{
+		ddwr("THAT IS NOT A WALL");
+		ddwr("REMEMBER LOOKS CAN BE DECEIVING");
 		ddmaintimeloop();
 	}
 }
