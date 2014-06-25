@@ -622,7 +622,7 @@ function ddcommandlist_pre()
 	//ddwr("4=SWITCH WEAPON HN HAND  5=FIGHT");
 	//ddwr("6=LOOK AROUND  7=SAVE GAME  8=USE MAGIC  9=BUY MAGIC");
 	//ddwr("0=PASS  11=BUY H.P.");
-	ddwr("YOU ARE AT ("+ddglobal['G']+","+ddglobal['H']+")  COMMANDS LIST");
+	ddwr("YOU ARE AT ("+ddglobal['H']+","+ddglobal['G']+")  COMMANDS LIST");
 	ddwr("1=MOVE 2=OPEN DOOR 3=SEARCH 4=EQUIP WEAPON 5=FIGHT 6=LOOK");
 	ddwr("7=SAVE GAME 8=USE MAGIC 9=BUY MAGIC 0=PASS 11=BUY H.P.");
 	ddwrgetinput('ddcommandlist');
@@ -2420,7 +2420,7 @@ X4 must be what the player has purchased
 function ddcastwizard(cliinput)
 {
 	ddglobal['Q'] = cliinput;
-	if( (cliinput >= 1) && (cliinput <= 9) )
+	if( (cliinput >= 1) && (cliinput <= 10) )
 	{
 		var havespellflag = null;
 		for(var M = 1; M <= ddglobal['X3']; M++)
@@ -2464,7 +2464,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
 		ddmovemonsteraway();
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddmaintimeloop();
 	}
 	else if(spellnum == 2)
@@ -2474,7 +2474,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		if( ddrandom(1, 3) > 1 )
 		{
 			ddwr("DONE");
-			ddglobal['X2'][memnum] = 0;
+			ddglobal['X4'][memnum] = 0;
 			ddglobal['K1'] = -1;
 		}
 		else
@@ -2492,14 +2492,14 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//GOTO 09800
 		ddwr("CASTING");
 		ddgenericsearchspell(3, 2);
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddmaintimeloop();
 	}
 	else if(spellnum == 4)
 	{
 		//GOTO 09800
 		//TELEPORT
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddwr("INPUT X CO-ORDINATE 1 - 24");
 		ddwrgetinput('ddteleportgetxcoordinate');
 	}
@@ -2509,7 +2509,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//CHANGE 1+0
 		//REMOVE WALL
 		//ddwr("NOT IMPLEMENTED YET");
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddwr("INPUT X CO-ORDINATE 1 - 24");
 		ddwrgetinput('ddremovewallgetxcoordinate');
 	}
@@ -2521,7 +2521,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("DONE");
 		var damage = 3 + ddrandom(1, 11);
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
 		ddmaintimeloop();
 	}
@@ -2533,7 +2533,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("DONE");
 		var damage = 6 + ddrandom(1, 11);
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
 		ddmaintimeloop();
 	}
@@ -2544,7 +2544,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		ddwr("DONE");
 		var damage = 9 + ddrandom(1, 11);
 		ddglobal['B'][ddglobal['K']][3] = ddglobal['B'][ddglobal['K']][3] - damage;
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddwr("M-HP="+ddglobal['B'][ddglobal['K']][3]+"");
 		ddmaintimeloop();
 	}
@@ -2556,7 +2556,7 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//Q = 3
 		ddwr("CASTING");
 		ddgenericsearchspell(3, 3);
-		ddglobal['X2'][memnum] = 0;
+		ddglobal['X4'][memnum] = 0;
 		ddmaintimeloop();
 	}
 	else if(spellnum == 10)
@@ -2565,7 +2565,9 @@ function dddeterminewizardspelleffect(spellnum, memnum)
 		//CHANGE 0+1
 		//ADD WALL
 		ddwr("NOT IMPLEMENTED YET");
-		ddmaintimeloop();
+		ddglobal['X4'][memnum] = 0;
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddcreatewallgetxcoordinate');
 	}
 	else
 	{
@@ -2643,7 +2645,7 @@ function ddremovewallgetxcoordinate(cliinput)
 	else
 	{
 		ddwr("INPUT X CO-ORDINATE 1 - 24");
-		ddwrgetinput('ddremovewallgetycoordinate');
+		ddwrgetinput('ddremovewallgetxcoordinate');
 	}
 }
 
@@ -2668,16 +2670,78 @@ function ddtryremovewall()
 {
 	var U5 = ddglobal['U5'];
 	var U6 = ddglobal['U6'];
-	if( ddglobal['DA'][U5][U6] == 1 )
+	if( ddglobal['DA'][U6][U5] == 1 )
 	{
 		ddwr("THE WALL DISAPPEARS");
-		ddglobal['DA'][U5][U6] = 0;
+		ddglobal['DA'][U6][U5] = 0;
 		ddmaintimeloop();
 	}
 	else
 	{
 		ddwr("THAT IS NOT A WALL");
 		ddwr("REMEMBER LOOKS CAN BE DECEIVING");
+		ddmaintimeloop();
+	}
+}
+
+/*
+
+*/
+function ddcreatewallgetxcoordinate(cliinput)
+{
+	ddglobal['U5'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddwr("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddcreatewallgetycoordinate');
+	}
+	else
+	{
+		ddwr("INPUT X CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddcreatewallgetxcoordinate');
+	}
+}
+
+function ddcreatewallgetycoordinate(cliinput)
+{
+	ddglobal['U6'] = parseInt(cliinput);
+	if( (cliinput >= 0) && (cliinput <= 25) )
+	{
+		ddtrycreatewall();
+	}
+	else
+	{
+		ddwrite("INPUT Y CO-ORDINATE 1 - 24");
+		ddwrgetinput('ddcreatewallgetycoordinate');
+	}
+}
+
+/*
+line 09830
+*/
+function ddtrycreatewall()
+{
+	var U5 = ddglobal['U5'];
+	var U6 = ddglobal['U6'];
+	dddebug(U5+' '+U6);
+	dddebug(ddglobal['DA'][U6][U5]);
+	if( ddglobal['DA'][U6][U5] == 0 )
+	{
+		ddwr("YOU CREATE A WALL");
+		ddglobal['DA'][U6][U5] = 1;
+		ddmaintimeloop();
+	}
+	else if( ddglobal['DA'][U6][U5] == 5 )
+	{
+		ddwr("YOU CREATE A WALL");
+		ddglobal['DA'][U6][U5] = 1;
+		ddwr("THE MONSTER IS CRUSHED UNDER ITS WEIGHT");
+		ddglobal['K1'] = -1;
+		ddmaintimeloop();
+	}
+	else
+	{
+		ddwr("SPELL FAILED");
 		ddmaintimeloop();
 	}
 }
