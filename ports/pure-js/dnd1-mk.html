@@ -159,17 +159,34 @@ function ddoldnewgame(cliinput)
 	if((cliinput == 'O') || (cliinput == 'OLD'))
 	{
 		//TODO 01770
-		ddwr("NOT IMPLEMENTED YET");
-		ddwr("(O)LD OR (N)EW GAME");
-		ddwrgetinput('ddoldnewgame');
-		return;
+		var savedgame = localStorage.getItem('DND1');
+		dddebug(savedgame);
+		ddglobal = JSON.parse(savedgame);
+		if(!ddglobal)
+		{
+			ddwr("NO SAVE FOUND");
+			ddinitglobalmemory();
+			ddwr("(O)LD OR (N)EW GAME");
+			ddwrgetinput('ddoldnewgame');
+		}
+		else if( typeof ddglobal.DA != 'undefined' )
+		{
+			ddwr("GAME LOADED");
+			ddyeastart();
+		}
+		else
+		{
+			ddwr("NO SAVE FOUND");
+			ddinitglobalmemory();
+			ddwr("(O)LD OR (N)EW GAME");
+			ddwrgetinput('ddoldnewgame');
+		}
 	}
 	else if((cliinput == 'N') || (cliinput == 'NEW'))
 	{
 		//ddwr("DUNGEON #");
 		ddwr("DUNGEON # (1) (2) (3) (4) (5) (6)");
 		ddwrgetinput('dddungeonnumber');
-		return;
 	}
 	else
 	{
@@ -2195,15 +2212,12 @@ line 06610
 function ddsavegame()
 {
 	//ddglobal['FILE'][7] = Array();
-	var savearray = Array();
-
-	savearray['D'] = ddglobal['D'];
-	savearray['X'] = ddglobal['X'];
-	savearray['J'] = ddglobal['J'];
-	savearray['G'] = ddglobal['G'];
-	savearray['H'] = ddglobal['H'];
-	savearray['K'] = ddglobal['K'];
-
+	//document.cookie = JSON.stringify(ddglobal);
+	var savedgame = JSON.stringify(ddglobal);
+	dddebug(savedgame);
+	localStorage.setItem('DND1', savedgame);
+	ddwr("GAME SAVED");
+	ddcommandlist_pre();
 }
 
 /*
@@ -3648,7 +3662,7 @@ But javascript starts counting at 0 so keep that in mind.
 */
 function ddinitglobalmemory()
 {
-	ddglobal = Array();
+	ddglobal = {};
 	ddglobal['CS'] = Array('skip0');
 	ddglobal['CS'][1] = "STR";
 	ddglobal['CS'][2] = "DEX";
